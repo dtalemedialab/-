@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIND — 균열</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#07070f; --panel:#0d0d1c; --border:#18183a;
+  --acc:#7c6fe0; --acc2:#e07ca0; --text:#cccaf0; --dim:#3d3b60;
+}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+
+/* ── SCREEN SYSTEM ── */
+.screen{display:none;width:100%;max-width:700px;padding:28px 18px;flex-direction:column;align-items:center;}
+.screen.active{display:flex;}
+
+/* ── TITLE ── */
+#s-title{justify-content:center;min-height:100vh;text-align:center;gap:22px;}
+.logo{font-size:5rem;font-weight:900;letter-spacing:14px;background:linear-gradient(135deg,#7c6fe0,#b16cea,#6ee7f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sub{font-size:1rem;color:var(--dim);letter-spacing:6px;text-transform:uppercase;}
+.intro-box{max-width:440px;font-size:.9rem;color:#7a789a;line-height:2;border-left:2px solid var(--acc);padding-left:16px;text-align:left;}
+.btn-p{padding:14px 44px;border:none;border-radius:14px;background:linear-gradient(135deg,#7c6fe0,#b16cea);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;box-shadow:0 4px 28px rgba(124,111,224,.3);}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 8px 36px rgba(124,111,224,.5);}
+.btn-ghost{padding:10px 28px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--dim);font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.btn-ghost:hover{border-color:var(--acc);color:var(--text);}
+
+/* ── DIALOG ── */
+#s-dialog{gap:0;min-height:100vh;justify-content:flex-end;padding-bottom:28px;}
+#d-bg{position:fixed;inset:0;z-index:0;transition:background 1.2s;}
+#d-scene{position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+#scene-art{font-size:8rem;opacity:.3;transition:all 1.2s;filter:blur(1px);}
+#d-badge{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:rgba(124,111,224,.12);border:1px solid var(--acc);border-radius:20px;padding:5px 18px;font-size:.72rem;color:var(--acc);font-weight:700;letter-spacing:1px;z-index:5;}
+#d-sanity{position:fixed;top:18px;right:18px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+#d-sanity .sl{font-size:.65rem;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+#sanity-bar-wrap{width:100px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+#sanity-bar{height:100%;background:var(--acc);border-radius:99px;transition:width .6s ease,background .6s;}
+#d-box{position:relative;z-index:2;width:100%;max-width:660px;background:rgba(13,13,28,.94);border:1px solid var(--border);border-radius:18px;padding:22px 26px;backdrop-filter:blur(14px);box-shadow:0 0 60px rgba(124,111,224,.12);}
+#d-speaker{font-size:.72rem;font-weight:700;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+#d-text{font-size:.97rem;line-height:1.85;min-height:56px;}
+#d-cursor{display:inline-block;animation:blink .75s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+#d-next{margin-top:14px;width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--dim);font-size:.78rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+#d-next:hover{border-color:var(--acc);color:var(--text);}
+/* glitch effect on text */
+.glitch{animation:glitchText .15s infinite;}
+@keyframes glitchText{0%{text-shadow:2px 0 #e07ca0,-2px 0 #7c6fe0}50%{text-shadow:-2px 0 #e07ca0,2px 0 #7c6fe0}100%{text-shadow:2px 0 #7c6fe0,-2px 0 #e07ca0}}
+.crack{color:#e07ca0 !important;font-weight:700;}
+
+/* ── PUZZLE ── */
+#s-puzzle{gap:14px;min-height:100vh;padding-top:20px;}
+#pz-hd{text-align:center;}
+#pz-ch{font-size:.72rem;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+#pz-title{font-size:1.3rem;font-weight:700;}
+#pz-desc{font-size:.8rem;color:var(--dim);margin-top:5px;line-height:1.6;max-width:500px;text-align:center;}
+#timer-wrap{width:100%;height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
+#timer-bar{height:100%;background:var(--acc);border-radius:99px;transition:width .1s linear,background .3s;}
+#pz-area{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px;}
+#pz-vis{width:100%;display:flex;justify-content:center;align-items:center;min-height:240px;flex-wrap:wrap;gap:12px;}
+canvas.pcv{border-radius:10px;border:1px solid var(--border);cursor:default;max-width:100%;}
+#pz-q{font-size:.95rem;font-weight:700;text-align:center;color:var(--text);}
+#pz-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.cb{padding:11px 22px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;}
+.cb:hover{border-color:var(--acc);background:rgba(124,111,224,.1);}
+.cb.ok2{border-color:#34d399;background:rgba(52,211,153,.12);color:#34d399;}
+.cb.ng{border-color:#f87171;background:rgba(248,113,113,.08);color:#f87171;}
+#pz-fb{font-size:.88rem;font-weight:700;min-height:22px;text-align:center;transition:color .3s;line-height:1.6;max-width:480px;}
+#pz-fb.ok{color:#34d399;}#pz-fb.no{color:#f87171;}
+#hint-btn{font-size:.72rem;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'Noto Sans KR',sans-serif;}
+#hint-btn:hover{color:var(--text);}
+#hint-txt{font-size:.8rem;color:#9d8fe0;display:none;text-align:center;line-height:1.7;max-width:440px;}
+
+/* ── CRACK OVERLAY ── */
+#crack-overlay{display:none;position:fixed;inset:0;z-index:50;pointer-events:none;background:transparent;}
+#crack-overlay.show{display:block;}
+#crack-overlay canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── CHOICE SCREEN ── */
+#s-choice{justify-content:center;min-height:100vh;gap:20px;text-align:center;}
+#s-choice h2{font-size:1.6rem;font-weight:900;}
+#s-choice p{color:var(--dim);font-size:.85rem;max-width:400px;line-height:1.8;}
+#s-choice .choices-wrap{display:flex;flex-direction:column;gap:12px;width:100%;max-width:440px;}
+.choice-card{padding:18px 22px;border:1px solid var(--border);border-radius:14px;background:var(--panel);cursor:pointer;transition:all .2s;text-align:left;}
+.choice-card:hover{border-color:var(--acc);transform:translateX(4px);}
+.choice-card .ct{font-size:.95rem;font-weight:700;margin-bottom:4px;}
+.choice-card .cd{font-size:.78rem;color:var(--dim);line-height:1.6;}
+
+/* ── ENDING SCREENS ── */
+#s-end{justify-content:center;min-height:100vh;gap:22px;text-align:center;padding-top:40px;}
+.end-art{font-size:5rem;}
+.end-title{font-size:2rem;font-weight:900;line-height:1.3;}
+.end-body{font-size:.9rem;color:#8885b0;line-height:1.9;max-width:440px;border-left:2px solid var(--acc2);padding-left:16px;text-align:left;}
+.end-tag{font-size:.7rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+</style>
+</head>
+<body>
+
+<!-- TITLE -->
+<div id="s-title" class="screen active">
+  <div class="logo">MIND</div>
+  <div class="logo-sub">균 열</div>
+  <div class="intro-box">
+    당신은 유능한 심리치료사입니다.<br>
+    수많은 환자들의 마음을 고쳐왔죠.<br><br>
+    그러나 오늘, 마지막 환자가<br>
+    당신에게 묻습니다.<br><br>
+    <span style="color:#a09ab8"><i>"선생님, 선생님은 괜찮으세요?"</i></span>
+  </div>
+  <button class="btn-p" onclick="startGame()">▶ 시작하기</button>
+</div>
+
+<!-- DIALOG -->
+<div id="s-dialog" class="screen">
+  <div id="d-bg"></div>
+  <div id="d-scene"><div id="scene-art">🏥</div></div>
+  <div id="d-badge">PROLOGUE</div>
+  <div id="d-sanity"><div class="sl">정신력</div><div id="sanity-bar-wrap"><div id="sanity-bar" style="width:100%"></div></div></div>
+  <div id="d-box">
+    <div id="d-speaker">???</div>
+    <div id="d-text"><span id="d-text-in"></span><span id="d-cursor">▍</span></div>
+    <button id="d-next" onclick="nextDialog()">계속 ▶</button>
+  </div>
+</div>
+
+<!-- PUZZLE -->
+<div id="s-puzzle" class="screen">
+  <div id="pz-hd">
+    <div id="pz-ch">CASE 1</div>
+    <div id="pz-title">착시의 이름</div>
+    <div id="pz-desc"></div>
+  </div>
+  <div id="timer-wrap"><div id="timer-bar" style="width:100%"></div></div>
+  <div id="pz-area">
+    <div id="pz-vis"></div>
+    <div id="pz-q"></div>
+    <div id="pz-btns"></div>
+    <div id="pz-fb"></div>
+    <button id="hint-btn" onclick="toggleHint()">💡 힌트</button>
+    <div id="hint-txt"></div>
+  </div>
+</div>
+
+<!-- CRITICAL CHOICE -->
+<div id="s-choice" class="screen">
+  <h2 id="choice-title">선택의 순간</h2>
+  <p id="choice-desc"></p>
+  <div class="choices-wrap" id="choices-wrap"></div>
+</div>
+
+<!-- ENDING -->
+<div id="s-end" class="screen">
+  <div class="end-art" id="end-art">🧠</div>
+  <div class="end-tag" id="end-tag">ENDING A</div>
+  <div class="end-title" id="end-title">제목</div>
+  <div class="end-body" id="end-body">내용</div>
+  <button class="btn-p" style="margin-top:8px" onclick="startGame()">🔄 다시 하기</button>
+  <button class="btn-ghost" onclick="showTitleScreen()">◀ 처음으로</button>
+</div>
+
+<!-- CRACK OVERLAY -->
+<div id="crack-overlay"><canvas id="crack-cv"></canvas></div>
+
+<script>
+// ================================================================
+//  STATE
+// ================================================================
+let sanity = 100;      // 0~100
+let chIdx = 0;         // current chapter index
+let dIdx = 0;          // dialog line index
+let dMode = 'pre';     // 'pre' | 'post'
+let puzzleOk = false;
+let wrongCount = 0;    // total wrong answers across all puzzles
+let timerInt = null;
+let timeLeft = 0;
+let typing = false, typeInt = null, fullText = '';
+let charPos = 0;
+let crackAnim = null;
+
+// Final choice accumulator
+let choiceMade = null; // 'accept' | 'deny' | 'collapse'
+
+// ================================================================
+//  SANITY SYSTEM
+// ================================================================
+function setSanity(v) {
+  sanity = Math.max(0, Math.min(100, v));
+  const bar = document.getElementById('sanity-bar');
+  bar.style.width = sanity + '%';
+  bar.style.background = sanity > 60 ? '#7c6fe0' : sanity > 30 ? '#fbbf24' : '#f87171';
+  if (sanity <= 30) flashCrack();
+}
+
+function loseSanity(n) { setSanity(sanity - n); }
+
+// ================================================================
+//  CRACK OVERLAY
+// ================================================================
+function flashCrack() {
+  const ov = document.getElementById('crack-overlay');
+  const cv2 = document.getElementById('crack-cv');
+  cv2.width = window.innerWidth; cv2.height = window.innerHeight;
+  const ctx2 = cv2.getContext('2d');
+  ctx2.clearRect(0,0,cv2.width,cv2.height);
+  const n = 6 + Math.floor((100-sanity)/15);
+  for (let i=0;i<n;i++) {
+    ctx2.strokeStyle = `rgba(224,124,160,${0.15+Math.random()*0.25})`;
+    ctx2.lineWidth = 1 + Math.random()*2;
+    ctx2.beginPath();
+    let x=Math.random()*cv2.width, y=Math.random()*cv2.height;
+    ctx2.moveTo(x,y);
+    for(let j=0;j<5;j++){x+=(-60+Math.random()*120);y+=(-60+Math.random()*120);ctx2.lineTo(x,y);}
+    ctx2.stroke();
+  }
+  ov.classList.add('show');
+  clearTimeout(crackAnim);
+  crackAnim = setTimeout(()=>ov.classList.remove('show'), 600);
+}
+
+// ================================================================
+//  CHAPTERS / STORY DATA
+// ================================================================
+/* 
+  Structure:
+  - pre: dialog lines before puzzle
+  - puzzle: puzzle definition
+  - post: dialog lines after puzzle (can branch)
+  - Some chapters have a choice node instead of auto-advance
+*/
+
+const STORY = [
+
+  // ── CASE 1: 최민서 (색깔 착시) ──────────────────────────
+  {
+    badge:'CASE 1 — 최민서',
+    art:'🪑', bg:'linear-gradient(180deg,#07070f,#0e0a1f)',
+    sanityHit: 0,
+    pre:[
+      {sp:'기록지', tx:'환자: 최민서, 27세. 주요 증상 — "색이 다르게 보임". 3개월 째 치료 진행 중.'},
+      {sp:'최민서', tx:'선생님... 오늘도 그 느낌이 들어요. 남자친구 얼굴이 화났을 때랑 웃을 때랑 완전히 다른 사람처럼 보여요.'},
+      {sp:'치료사', tx:'색채 인식 편향이 감정 상태에 따라 달라지는 거예요. 오늘 한 가지 실험을 해볼게요.'},
+      {sp:'최민서', tx:'...선생님은 항상 침착하시네요. 저도 그렇게 될 수 있을까요?'},
+      {sp:'치료사', tx:'(잠시 멈춤) ...물론이죠.'},
+    ],
+    puzzle:{
+      id:'color_same',
+      title:'같은 색, 다른 맥락',
+      desc:'배경이 다르면 같은 색도 다르게 보입니다. 이것은 뇌의 오류가 아니라 — 맥락 의존적 처리입니다.',
+      q:'두 원 안의 색은 실제로 같을까요, 다를까요?',
+      choices:['완전히 같다','약간 다르다','완전히 다르다'],
+      correct:'완전히 같다',
+      hint:'배경의 밝기를 가리고 원만 보세요. RGB값이 동일합니다.',
+      okTx:'정확해요. ─ 같은 것도 다르게 보일 수 있어요. 그게 틀린 게 아니에요.',
+      ngTx:'실제론 완전히 같은 색이에요. ─ 배경이 뇌를 속인 거예요.',
+      timeSec:12
+    },
+    post:[
+      {sp:'최민서', tx:'정말요... 같은 색이었군요. 저한테는 달라 보이는데.'},
+      {sp:'치료사', tx:'당신 뇌가 맥락을 읽는 거예요. 예민한 거예요, 고장난 게 아니라.'},
+      {sp:'최민서', tx:'(작게) 감사해요, 선생님. 선생님 덕분에 좀 나아지는 것 같아요.'},
+      {sp:'치료사', tx:'(차트에 메모한다. 좋은 진전.)'},
+    ]
+  },
+
+  // ── CASE 2: 박도현 (길이/크기 착시) ────────────────────
+  {
+    badge:'CASE 2 — 박도현',
+    art:'📏', bg:'linear-gradient(180deg,#07070f,#0f0e1a)',
+    sanityHit: 0,
+    pre:[
+      {sp:'기록지', tx:'환자: 박도현, 34세. 증상 — "물체 크기가 실제와 다르게 보임". 강박적 측정 행동 보고됨.'},
+      {sp:'박도현', tx:'선생님, 저 오늘도 줄자 세 번 다시 쟀어요. 책상이 어제보다 작아 보여서.'},
+      {sp:'치료사', tx:'박 씨, 책상은 어제랑 똑같아요.'},
+      {sp:'박도현', tx:'알아요. 근데 보여요. 선생님한테는 안 보이세요?'},
+      {sp:'치료사', tx:'뇌가 크기를 추론하는 방식 때문이에요. 제가 보여드릴게요.'},
+    ],
+    puzzle:{
+      id:'size_ebbinghaus',
+      title:'에빙하우스의 원',
+      desc:'주변 원들의 크기가 가운데 원을 다르게 보이게 만듭니다. 이것이 바로 박 씨가 경험하는 것과 같은 현상이에요.',
+      q:'왼쪽과 오른쪽 가운데 원, 어느 쪽이 더 크나요?',
+      choices:['왼쪽이 더 크다','오른쪽이 더 크다','같다'],
+      correct:'같다',
+      hint:'가운데 원만 손가락으로 가리고 비교해보세요. 주변을 차단하면 진짜 크기가 보여요.',
+      okTx:'맞아요. ─ 주변이 본질을 왜곡해요. 박 씨가 느끼는 것도 바로 이거예요.',
+      ngTx:'실제론 같은 크기예요. ─ 주변 맥락이 판단을 바꾸는 거예요.',
+      timeSec:13
+    },
+    post:[
+      {sp:'박도현', tx:'...같은 크기라고요? 오른쪽이 훨씬 크게 보이는데.'},
+      {sp:'치료사', tx:'줄자로 재면 같아요. 박 씨의 뇌가 주변을 과도하게 읽는 거예요.'},
+      {sp:'박도현', tx:'그럼... 제 주변 사람들이 저를 작게 보이게 만드는 건가요?'},
+      {sp:'치료사', tx:'(잠깐 멈춤) ...그건 다음에 이야기해요.'},
+    ]
+  },
+
+  // ── CASE 3: 이수진 (운동/회전 착시) ─────────────────────
+  {
+    badge:'CASE 3 — 이수진',
+    art:'🌀', bg:'linear-gradient(180deg,#07070f,#100a18)',
+    sanityHit: 5,
+    pre:[
+      {sp:'기록지', tx:'환자: 이수진, 31세. 증상 — "정지한 것이 움직여 보임". 수면 장애, 불안 발작 동반.'},
+      {sp:'이수진', tx:'선생님, 저 진짜 미쳐가는 것 같아요. 벽지 무늬가 움직여요.'},
+      {sp:'치료사', tx:'미친 게 아니에요. 시각 피질이 패턴을 운동으로 해석하는 거예요.'},
+      {sp:'이수진', tx:'그게 정상이에요?'},
+      {sp:'치료사', tx:'완벽하게 정상이에요. 지금 보여드릴게요.'},
+      {sp:'이수진 (작게)', tx:'...선생님도 가끔 이런 거 보이지 않으세요?'},
+      {sp:'치료사', tx:'(순간 굳어지며) ...아니요. 아니에요.'},
+    ],
+    puzzle:{
+      id:'rotation',
+      title:'멈춰 있는 소용돌이',
+      desc:'패턴을 가만히 바라보세요. 뇌의 V5 영역이 움직임을 감지하려다 착각을 일으킵니다.',
+      q:'이 도형들은 지금 실제로 움직이고 있나요?',
+      choices:['움직이고 있다','정지해 있다'],
+      correct:'정지해 있다',
+      hint:'화면 모서리를 보거나 눈을 빠르게 깜빡이면 착시가 약해져요.',
+      okTx:'정지해 있어요. ─ 하지만 당신이 움직임을 본 것도 사실이에요.',
+      ngTx:'정지해 있어요. ─ 뇌가 패턴에서 운동을 추출한 거예요.',
+      timeSec:15
+    },
+    post:[
+      {sp:'이수진', tx:'...정말 안 움직여요? 저는 분명히 돌아가는 걸 봤는데.'},
+      {sp:'치료사', tx:'당신 눈이 거짓말한 게 아니에요. 당신 뇌가 너무 예민하게 반응하는 거예요.'},
+      {sp:'이수진', tx:'선생님은... 항상 확신하는 것처럼 말하시는데, 선생님도 가끔 의심 안 하세요?'},
+      {sp:'치료사', tx:'(긴 침묵) ...오늘은 여기까지 해요.'},
+      {sp:'내레이션', tx:'(무언가 흔들리는 느낌. 나는 그것을 무시하기로 했다.)'},
+    ]
+  },
+
+  // ── CASE 4: 강준혁 (음과 양 / 반전 착시) ────────────────
+  {
+    badge:'CASE 4 — 강준혁',
+    art:'🌗', bg:'linear-gradient(180deg,#07070f,#0a0f14)',
+    sanityHit: 10,
+    pre:[
+      {sp:'기록지', tx:'환자: 강준혁, 41세. 증상 — "밝은 것이 어둡게, 어두운 것이 밝게 보임". 과거 외상 이력 있음.'},
+      {sp:'강준혁', tx:'선생님, 저는 사람을 반대로 봐요. 웃는 사람이 슬퍼 보이고, 우는 사람이 안도한 것처럼 보여요.'},
+      {sp:'치료사', tx:'감정 인식 역전... 트라우마로 인한 표정 처리 왜곡일 수 있어요.'},
+      {sp:'강준혁', tx:'선생님도 그런 적 없으세요? 진짜인 것과 거짓인 것이 뒤바뀌어 보이는 느낌.'},
+      {sp:'치료사', tx:'(불편한 기색) 저는 치료사예요, 강 씨.'},
+      {sp:'강준혁', tx:'(미소를 지으며) 알아요. 그게 답이 아니라는 것도 알아요.'},
+    ],
+    puzzle:{
+      id:'negative_space',
+      title:'음화(陰畫) — 뒤집힌 세계',
+      desc:'밝고 어두운 것이 바뀌면 세상이 다르게 보입니다. 이것이 강준혁 씨가 매일 경험하는 것이에요.',
+      q:'이 이미지에서 "얼굴"은 어디에 있나요?',
+      choices:['흰색 부분','검은 부분','둘 다'],
+      correct:'둘 다',
+      hint:'루빈의 꽃병. 시선을 전환하면 꽃병도, 얼굴도 보여요. 하나의 정답은 없어요.',
+      okTx:'맞아요. ─ 둘 다 진짜예요. 어느 것을 먼저 보느냐의 문제예요.',
+      ngTx:'둘 다 맞아요. ─ 관점을 바꾸면 진실도 달라져 보일 수 있어요.',
+      timeSec:14
+    },
+    post:[
+      {sp:'강준혁', tx:'둘 다... 맞군요.'},
+      {sp:'치료사', tx:'관점이 달라지면 진실도 달라 보이는 거예요.'},
+      {sp:'강준혁', tx:'(조용히) 선생님은 지금 저한테 치료하는 거예요, 아니면 자신한테 하는 거예요?'},
+      {sp:'치료사', tx:'(갑자기 심장이 빠르게 뛴다. 무슨 말을 하는 거지.)'},
+      {sp:'내레이션', tx:'균열이 조금씩 커지고 있다. 나는 느끼지 못했다.'},
+    ]
+  },
+
+  // ── CASE 5: 마지막 환자 — "김하은" ─────────────────────
+  // 이 환자가 전부를 무너뜨린다
+  {
+    badge:'CASE 5 — 김하은',
+    art:'🕯️', bg:'linear-gradient(180deg,#07070f,#1a0a0a)',
+    sanityHit: 20,
+    pre:[
+      {sp:'기록지', tx:'환자: 김하은. 나이 미상. 의뢰인 불명. ─ 이 기록이 이상하다. 내가 직접 작성한 기억이 없다.'},
+      {sp:'김하은', tx:'안녕하세요, 선생님.'},
+      {sp:'치료사', tx:'...안녕하세요. 오늘 처음 오셨나요?'},
+      {sp:'김하은', tx:'아니요. 우리 오래 알았어요. 선생님이 모를 뿐이에요.'},
+      {sp:'치료사', tx:'(차트를 뒤적인다. 이 이름이 없다.) ...기록이 없는데요.'},
+      {sp:'김하은', tx:'선생님, 저한테 하셨던 말 기억하세요? "현실이 달라 보일 때, 맥락을 의심하라"고.'},
+      {sp:'치료사', tx:'(그건... 내가 환자들에게 하는 말이다.) 그걸 어떻게...'},
+      {sp:'김하은', tx:'선생님이 저한테 하셨잖아요. 3년 전에. 선생님이 저의 치료사였잖아요.'},
+      {sp:'치료사', tx:'제가... 치료를 받은 적이 없어요.'},
+      {sp:'김하은 (조용히)', tx:'정말요?'},
+    ],
+    puzzle:{
+      id:'ponzo_reality',
+      title:'폰조의 함정 — 무엇이 더 가까운가',
+      desc:'원근법이 만드는 착시입니다. 멀리 있는 것처럼 보이는 것이 실제로는 가까이 있을 수 있어요.',
+      q:'위쪽 가로선과 아래쪽 가로선 중 어느 것이 더 길까요?',
+      choices:['위쪽이 더 길다','아래쪽이 더 길다','같다'],
+      correct:'같다',
+      hint:'두 선이 같은 길이예요. 하지만 철로의 원근감이 위 선을 더 멀리, 더 크게 인식하게 만들어요.',
+      okTx:'같아요. ─ 원근이 진실을 가려요. 가까운 것과 먼 것이 바뀌어 보일 수 있어요.',
+      ngTx:'같은 길이예요. ─ 당신이 본 것은 현실이 아니라 뇌의 해석이에요.',
+      timeSec:10
+    },
+    post:[
+      {sp:'김하은', tx:'선생님, 저도 잘 알아요. 선생님이 기억을 지우는 방식을.'},
+      {sp:'치료사', tx:'무슨 말을 하는 거예요.'},
+      {sp:'김하은', tx:'선생님이 저한테 가르쳐 줬잖아요. 견디기 너무 힘든 기억은 착시처럼 다르게 보이도록 뇌가 재구성한다고.'},
+      {sp:'치료사', tx:'그건 환자들에게 설명하는 개념이에요.'},
+      {sp:'김하은', tx:'네. 맞아요. 선생님이 환자였을 때도 그렇게 설명해줬어요. 선생님 자신의 치료사가.'},
+      {sp:'치료사', tx:'(심장이 내려앉는 느낌. 이건... 아니다. 내가 치료사다. 나는 멀쩡하다.)'},
+      {sp:'김하은', tx:'선생님, 지금 이 방을 한번 둘러봐요.'},
+      {sp:'내레이션', tx:'(나는 고개를 들었다. 그리고 처음으로 — 이 방에 창문이 없다는 것을 깨달았다.)'},
+    ]
+  },
+
+  // ── 붕괴 직전 — 선택의 순간 ────────────────────────────
+  {
+    badge:'균열',
+    art:'🪞', bg:'linear-gradient(180deg,#1a0505,#0a0007)',
+    sanityHit: 25,
+    pre:[
+      {sp:'김하은', tx:'선생님, 여기 들어온 지 얼마나 됐어요?'},
+      {sp:'치료사', tx:'...모르겠어요.'},
+      {sp:'김하은', tx:'최민서 씨, 박도현 씨, 이수진 씨, 강준혁 씨. 그 분들이 실제로 있었나요?'},
+      {sp:'치료사', tx:'물론이에요. 나는 그들을 치료했어요.'},
+      {sp:'김하은', tx:'아니면... 선생님 안에 있는 조각들이었을까요?'},
+      {sp:'치료사', tx:'(손이 떨린다. 아니야. 아니야. 나는 치료사야.)'},
+      {sp:'김하은', tx:'색이 다르게 보이는 것, 크기가 왜곡되는 것, 움직이는 것처럼 보이는 것, 밝고 어두운 것이 바뀌는 것.'},
+      {sp:'김하은', tx:'선생님, 그게 다 선생님 이야기예요.'},
+      {sp:'치료사', tx:'(모든 것이 뒤집히는 것 같다.)'},
+      {sp:'내레이션', tx:'지금 이 순간, 모든 것이 선택으로 수렴한다.'},
+    ],
+    puzzle:{
+      id:'cafe_wall',
+      title:'카페월 착시 — 평행의 거짓말',
+      desc:'모든 가로줄은 완벽히 평행합니다. 하지만 뇌는 기울어졌다고 말해요. 지금 당신의 현실처럼.',
+      q:'이 가로줄들은 평행한가요, 기울어져 있나요?',
+      choices:['평행하다','기울어져 있다','모르겠다'],
+      correct:'평행하다',
+      hint:'한 줄만 손가락으로 따라가 보세요. 실제로는 완벽하게 수평이에요.',
+      okTx:'평행해요. ─ 현실은 변하지 않았어요. 보이는 방식이 바뀐 거예요.',
+      ngTx:'평행해요. ─ 지금 당신에게 기울어져 보인다고 해서 현실이 바뀐 건 아니에요.',
+      timeSec:10
+    },
+    isChoice: true,
+    choiceTitle:'당신은 지금 누구인가요?',
+    choiceDesc:'김하은의 말 앞에서, 당신은 선택해야 합니다.',
+    choices:[
+      {
+        label:'나는 치료사다. 이것은 환자의 조작이다.',
+        desc:'내 기억을 믿는다. 나는 정상이다.',
+        key:'deny'
+      },
+      {
+        label:'어쩌면... 나도 환자였을지 모른다.',
+        desc:'모든 것을 다시 본다. 처음부터.',
+        key:'accept'
+      },
+      {
+        label:'(아무 말도 하지 않는다)',
+        desc:'침묵한다. 현실도 기억도 포기한다.',
+        key:'collapse'
+      }
+    ]
+  },
+];
+
+// ================================================================
+//  ENDINGS
+// ================================================================
+const ENDINGS = {
+  deny:{
+    tag:'ENDING A — 부정',
+    art:'🏥',
+    title:'나는 치료사다',
+    body:`당신은 끝까지 자신의 정체성을 지켰습니다.\n\n진료실 문을 열고 나가자, 동료 의사들이 당신을 바라봤습니다.\n\n"선생님, 오늘도 혼자 진료실에 계셨어요. 환자는 아무도 없었는데요."\n\n당신은 미소를 지었습니다.\n\n─ 하지만 그 미소가 어느 쪽인지, 이제 당신도 알 수 없었습니다.`,
+    color:'#7c6fe0'
+  },
+  accept:{
+    tag:'ENDING B — 수용',
+    art:'🌱',
+    title:'나는 환자였다',
+    body:`모든 것이 떠올랐습니다.\n\n3년 전. 당신도 이 의자에 앉아 있었습니다. 색이 다르게 보이고, 크기가 왜곡되고, 세상이 빙글빙글 돌던 날들.\n\n그 치료사의 이름은 — 김하은이었습니다.\n\n"선생님, 이제 기억나세요?"\n\n당신은 처음으로 울었습니다. 치료사가 아닌, 한 사람으로서.\n\n그것이 진짜 치유의 시작이었습니다.`,
+    color:'#34d399'
+  },
+  collapse:{
+    tag:'ENDING C — 붕괴',
+    art:'🕳️',
+    title:'경계가 사라진 곳',
+    body:`당신은 대답하지 않았습니다.\n\n진료실은 점점 어두워졌습니다.\n\n최민서도, 박도현도, 이수진도, 강준혁도, 김하은도 — 모두 같은 얼굴로 당신을 바라봤습니다.\n\n그 얼굴은 당신의 얼굴이었습니다.\n\n착시는 끝나지 않았습니다.\n\n─ 어쩌면 착시가 아니었는지도.`,
+    color:'#f87171'
+  }
+};
+
+// ================================================================
+//  SCREEN SWITCH
+// ================================================================
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showTitleScreen(){ show('s-title'); }
+
+// ================================================================
+//  DIALOG ENGINE
+// ================================================================
+function typeText(txt){
+  fullText=txt; charPos=0; typing=true;
+  document.getElementById('d-text-in').textContent='';
+  clearInterval(typeInt);
+  typeInt=setInterval(()=>{
+    document.getElementById('d-text-in').textContent=fullText.slice(0,++charPos);
+    if(charPos>=fullText.length){clearInterval(typeInt);typing=false;}
+  },24);
+}
+
+function nextDialog(){
+  if(typing){clearInterval(typeInt);document.getElementById('d-text-in').textContent=fullText;typing=false;return;}
+  dIdx++;
+  renderDialog();
+}
+
+function renderDialog(){
+  const ch=STORY[chIdx];
+  const lines=dMode==='pre'?ch.pre:ch.post;
+  if(dIdx>=lines.length){
+    if(dMode==='pre'){
+      startPuzzle();
+    } else {
+      // advance
+      chIdx++;
+      if(chIdx>=STORY.length){
+        // should not reach here normally
+        return;
+      }
+      const next=STORY[chIdx];
+      beginChapter();
+    }
+    return;
+  }
+  const line=lines[dIdx];
+  document.getElementById('d-speaker').textContent=line.sp;
+  typeText(line.tx);
+  // Apply glitch at low sanity
+  if(sanity<40){
+    document.getElementById('d-text-in').classList.add('glitch');
+  } else {
+    document.getElementById('d-text-in').classList.remove('glitch');
+  }
+}
+
+function beginChapter(){
+  const ch=STORY[chIdx];
+  dIdx=0; dMode='pre';
+  document.getElementById('d-badge').textContent=ch.badge;
+  document.getElementById('d-bg').style.background=ch.bg;
+  document.getElementById('scene-art').textContent=ch.art;
+  if(ch.sanityHit) loseSanity(ch.sanityHit);
+  show('s-dialog');
+  renderDialog();
+}
+
+// ================================================================
+//  PUZZLE ENGINE
+// ================================================================
+function startPuzzle(){
+  const pz=STORY[chIdx].puzzle;
+  puzzleOk=false;
+  document.getElementById('pz-ch').textContent=STORY[chIdx].badge+' · 착시 검사';
+  document.getElementById('pz-title').textContent=pz.title;
+  document.getElementById('pz-desc').textContent=pz.desc;
+  document.getElementById('pz-q').textContent=pz.q;
+  document.getElementById('pz-fb').textContent='';
+  document.getElementById('pz-fb').className='';
+  document.getElementById('hint-txt').style.display='none';
+  document.getElementById('hint-txt').textContent=pz.hint;
+  renderPuzzleVis(pz);
+  renderPuzzleBtns(pz);
+  show('s-puzzle');
+  startTimer(pz.timeSec);
+}
+
+function renderPuzzleVis(pz){
+  const vis=document.getElementById('pz-vis');
+  vis.innerHTML='';
+  const cv2=document.createElement('canvas');
+  cv2.className='pcv';
+  vis.appendChild(cv2);
+
+  if(pz.id==='color_same'){
+    cv2.width=420;cv2.height=200;
+    const c=cv2.getContext('2d');
+    c.fillStyle='#151528';c.fillRect(0,0,420,200);
+    c.fillStyle='#0d0d1a';c.fillRect(10,10,190,180);
+    c.fillStyle='#d8d8f0';c.fillRect(220,10,190,180);
+    const col='rgb(148,142,200)';
+    c.fillStyle=col;c.beginPath();c.arc(105,100,48,0,Math.PI*2);c.fill();
+    c.fillStyle=col;c.beginPath();c.arc(315,100,48,0,Math.PI*2);c.fill();
+    c.fillStyle='#6b7280';c.font='bold 15px sans-serif';c.textAlign='center';
+    c.fillText('A',105,174);c.fillText('B',315,174);
+  }
+
+  else if(pz.id==='size_ebbinghaus'){
+    cv2.width=420;cv2.height=200;
+    const c=cv2.getContext('2d');
+    c.fillStyle='#0d0d1a';c.fillRect(0,0,420,200);
+    drawEbbinghaus(c,105,100,32,52,'#a78bfa');
+    drawEbbinghaus(c,315,100,32,16,'#f472b6');
+    c.fillStyle='#6b7280';c.font='13px sans-serif';c.textAlign='center';
+    c.fillText('왼쪽',105,188);c.fillText('오른쪽',315,188);
+  }
+
+  else if(pz.id==='rotation'){
+    cv2.width=380;cv2.height=260;
+    const c=cv2.getContext('2d');
+    c.fillStyle='#0d0d1a';c.fillRect(0,0,380,260);
+    drawRotation(c,190,130,100);
+    c.fillStyle='#3d3b60';c.font='12px sans-serif';c.textAlign='center';
+    c.fillText('가만히 바라보세요...',190,248);
+  }
+
+  else if(pz.id==='negative_space'){
+    cv2.width=380;cv2.height=240;
+    const c=cv2.getContext('2d');
+    c.fillStyle='#0d0d1a';c.fillRect(0,0,380,240);
+    drawRubinVase(c,190,120,90);
+    c.fillStyle='#3d3b60';c.font='12px sans-serif';c.textAlign='center';
+    c.fillText('꽃병인가요, 얼굴인가요?',190,228);
+  }
+
+  else if(pz.id==='ponzo_reality'){
+    cv2.width=340;cv2.height=240;
+    const c=cv2.getContext('2d');
+    c.fillStyle='#0d0d1a';c.fillRect(0,0,340,240);
+    drawPonzo(c,170,240);
+    c.fillStyle='#3d3b60';c.font='12px sans-serif';c.textAlign='center';
+    c.fillText('A선과 B선 중 어느 것이 더 길까요?',170,228);
+  }
+
+  else if(pz.id==='cafe_wall'){
+    cv2.width=400;cv2.height=220;
+    const c=cv2.getContext('2d');
+    c.fillStyle='#0d0d1a';c.fillRect(0,0,400,220);
+    drawCafeWall(c,400,220);
+  }
+}
+
+function drawEbbinghaus(c,cx,cy,inner,outer,color){
+  const n=6;
+  for(let i=0;i<n;i++){
+    const a=i/n*Math.PI*2;
+    const d=inner+outer+10;
+    c.beginPath();c.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d,outer,0,Math.PI*2);
+    c.strokeStyle=color;c.lineWidth=2;c.stroke();
+    c.fillStyle='rgba(124,111,224,0.08)';c.fill();
+  }
+  c.beginPath();c.arc(cx,cy,inner,0,Math.PI*2);
+  c.fillStyle=color;c.fill();
+}
+
+function drawRotation(c,cx,cy,r){
+  for(let ring=0;ring<4;ring++){
+    const rr=(ring+1)*r/4;
+    const n=14+ring*8;
+    for(let i=0;i<n;i++){
+      const a=i/n*Math.PI*2;
+      const off=(ring%2===0?1:-1)*0.25;
+      const px=cx+Math.cos(a+off)*rr, py=cy+Math.sin(a+off)*rr;
+      c.save();c.translate(px,py);c.rotate(a+(ring%2===0?Math.PI/4:-Math.PI/4));
+      c.fillStyle=i%2===0?'#1e1e38':'#a78bfa';
+      c.fillRect(-10,-5,20,10);c.restore();
+    }
+  }
+}
+
+function drawRubinVase(c,cx,cy,h){
+  c.fillStyle='#e8e4ff';
+  // vase shape (white)
+  c.beginPath();
+  c.moveTo(cx,cy-h);
+  c.bezierCurveTo(cx+40,cy-h+40,cx+60,cy-40,cx+50,cy+h);
+  c.lineTo(cx-50,cy+h);
+  c.bezierCurveTo(cx-60,cy-40,cx-40,cy-h+40,cx,cy-h);
+  c.fill();
+  // faces (black) — fill the whole canvas then cut out vase
+  c.fillStyle='#0d0d1a';
+  c.fillRect(cx-90,cy-h-10,90,h*2+20);
+  c.fillRect(cx,cy-h-10,90,h*2+20);
+  c.fillStyle='#e8e4ff';
+  c.beginPath();
+  c.moveTo(cx,cy-h);
+  c.bezierCurveTo(cx+40,cy-h+40,cx+60,cy-40,cx+50,cy+h);
+  c.lineTo(cx-50,cy+h);
+  c.bezierCurveTo(cx-60,cy-40,cx-40,cy-h+40,cx,cy-h);
+  c.fill();
+}
+
+function drawPonzo(c,cx,H){
+  c.strokeStyle='#2d2d50';c.lineWidth=2;
+  c.beginPath();c.moveTo(cx-80,H-20);c.lineTo(cx,H*0.12);c.stroke();
+  c.beginPath();c.moveTo(cx+80,H-20);c.lineTo(cx,H*0.12);c.stroke();
+  // equal horizontal lines
+  c.strokeStyle='#a78bfa';c.lineWidth=4;
+  c.beginPath();c.moveTo(cx-55,H*0.65);c.lineTo(cx+55,H*0.65);c.stroke();
+  c.beginPath();c.moveTo(cx-55,H*0.3);c.lineTo(cx+55,H*0.3);c.stroke();
+  c.fillStyle='#6b7280';c.font='bold 13px sans-serif';c.textAlign='right';
+  c.fillText('B',cx-58,H*0.65+5);
+  c.fillText('A',cx-58,H*0.3+5);
+}
+
+function drawCafeWall(c,W,H){
+  const rows=7,sz=26;
+  for(let r=0;r<rows;r++){
+    const off=(r%2)*(sz/2);
+    const cols=Math.ceil((W+sz)/sz);
+    for(let col=0;col<cols;col++){
+      const x=off+col*sz-sz/2, y=r*sz+10;
+      c.fillStyle=(r+col)%2===0?'#d4d0f0':'#18183a';
+      c.fillRect(x,y,sz,sz);
+    }
+    c.fillStyle='#5a5870';c.fillRect(0,r*sz+10-1,W,2);
+  }
+}
+
+function renderPuzzleBtns(pz){
+  const wrap=document.getElementById('pz-btns');
+  wrap.innerHTML='';
+  pz.choices.forEach(ch2=>{
+    const b=document.createElement('button');
+    b.className='cb';b.textContent=ch2;
+    b.addEventListener('click',()=>answerPuzzle(ch2,b));
+    wrap.appendChild(b);
+  });
+}
+
+function answerPuzzle(choice,btn){
+  if(puzzleOk)return;
+  puzzleOk=true;
+  clearInterval(timerInt);
+  const pz=STORY[chIdx].puzzle;
+  const ok=choice===pz.correct;
+  const fb=document.getElementById('pz-fb');
+  if(ok){
+    btn.classList.add('ok2');
+    fb.textContent='✅ '+pz.okTx;fb.className='ok';
+  } else {
+    btn.classList.add('ng');
+    fb.textContent='❌ '+pz.ngTx;fb.className='no';
+    loseSanity(8);wrongCount++;
+    document.querySelectorAll('.cb').forEach(b=>{if(b.textContent===pz.correct)b.classList.add('ok2');});
+  }
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+
+  const ch=STORY[chIdx];
+  if(ch.isChoice){
+    setTimeout(()=>showChoiceScreen(ch),2000);
+  } else {
+    setTimeout(()=>{dIdx=0;dMode='post';show('s-dialog');renderDialog();},2000);
+  }
+}
+
+function toggleHint(){
+  const h=document.getElementById('hint-txt');
+  h.style.display=h.style.display==='none'?'block':'none';
+  loseSanity(3);
+}
+
+// ================================================================
+//  TIMER
+// ================================================================
+function startTimer(sec){
+  timeLeft=sec;
+  const bar=document.getElementById('timer-bar');
+  bar.style.width='100%';
+  bar.style.background='var(--acc)';
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    timeLeft-=.1;
+    const pct=Math.max(0,timeLeft/sec*100);
+    bar.style.width=pct+'%';
+    if(pct<30)bar.style.background='#f87171';
+    else if(pct<60)bar.style.background='#fbbf24';
+    if(timeLeft<=0){clearInterval(timerInt);if(!puzzleOk)timeUp();}
+  },100);
+}
+
+function timeUp(){
+  puzzleOk=true;
+  const pz=STORY[chIdx].puzzle;
+  const fb=document.getElementById('pz-fb');
+  fb.textContent='⏰ '+pz.ngTx;fb.className='no';
+  loseSanity(12);wrongCount++;
+  document.querySelectorAll('.cb').forEach(b=>{b.disabled=true;if(b.textContent===pz.correct)b.classList.add('ok2');});
+  const ch=STORY[chIdx];
+  if(ch.isChoice){setTimeout(()=>showChoiceScreen(ch),2000);}
+  else{setTimeout(()=>{dIdx=0;dMode='post';show('s-dialog');renderDialog();},2000);}
+}
+
+// ================================================================
+//  CHOICE SCREEN
+// ================================================================
+function showChoiceScreen(ch){
+  document.getElementById('choice-title').textContent=ch.choiceTitle;
+  document.getElementById('choice-desc').textContent=ch.choiceDesc;
+  const wrap=document.getElementById('choices-wrap');
+  wrap.innerHTML='';
+  ch.choices.forEach(opt=>{
+    const card=document.createElement('div');
+    card.className='choice-card';
+    card.innerHTML='<div class="ct">'+opt.label+'</div><div class="cd">'+opt.desc+'</div>';
+    card.addEventListener('click',()=>{
+      choiceMade=opt.key;
+      // play post dialogs first (if any) then show ending
+      dIdx=0;dMode='post';show('s-dialog');renderDialog();
+    });
+    wrap.appendChild(card);
+  });
+  show('s-choice');
+}
+
+// ================================================================
+//  CHAPTER ADVANCE — override renderDialog's auto-advance
+// ================================================================
+const _origRenderDialog = renderDialog;
+// Patch post-dialog advance for final chapter
+function renderDialog(){
+  const ch=STORY[chIdx];
+  const lines=dMode==='pre'?ch.pre:ch.post;
+  if(dIdx>=lines.length){
+    if(dMode==='pre'){
+      startPuzzle();
+    } else {
+      // if this was the choice chapter's post, show ending
+      if(ch.isChoice && choiceMade){
+        showEnding(choiceMade);
+        return;
+      }
+      chIdx++;
+      if(chIdx>=STORY.length){showEnding('deny');return;}
+      beginChapter();
+    }
+    return;
+  }
+  const line=lines[dIdx];
+  document.getElementById('d-speaker').textContent=line.sp;
+  typeText(line.tx);
+  if(sanity<35){
+    document.getElementById('d-text-in').classList.add('glitch');
+  } else {
+    document.getElementById('d-text-in').classList.remove('glitch');
+  }
+}
+
+// ================================================================
+//  ENDINGS
+// ================================================================
+function showEnding(key){
+  const e=ENDINGS[key]||ENDINGS.deny;
+  document.getElementById('end-tag').textContent=e.tag;
+  document.getElementById('end-art').textContent=e.art;
+  document.getElementById('end-title').textContent=e.title;
+  document.getElementById('end-body').style.borderColor=e.color;
+  // format line breaks
+  document.getElementById('end-body').innerHTML=e.body.replace(/\n/g,'<br>');
+  show('s-end');
+}
+
+// ================================================================
+//  INIT
+// ================================================================
+function startGame(){
+  sanity=100;chIdx=0;dIdx=0;dMode='pre';
+  wrongCount=0;choiceMade=null;puzzleOk=false;
+  setSanity(100);
+  beginChapter();
+}
+
+document.getElementById('d-next').addEventListener('click',nextDialog);
+show('s-title');
+</script>
+</body>
+</html>
