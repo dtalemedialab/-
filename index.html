@@ -3,874 +3,2828 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIND — 균열</title>
+<title>MIND — 서막</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#07070f; --panel:#0d0d1c; --border:#18183a;
-  --acc:#7c6fe0; --acc2:#e07ca0; --text:#cccaf0; --dim:#3d3b60;
-}
+:root{--bg:#05050d;--panel:#0a0a18;--border:#14143a;--acc:#8b7cf8;--acc2:#e07ca0;--text:#cac8f0;--dim:#3a385e;--warn:#fbbf24;--danger:#f87171;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
-
-/* ── SCREEN SYSTEM ── */
-.screen{display:none;width:100%;max-width:700px;padding:28px 18px;flex-direction:column;align-items:center;}
+.screen{display:none;width:100%;max-width:680px;padding:24px 16px;flex-direction:column;align-items:center;position:relative;z-index:1;}
 .screen.active{display:flex;}
 
-/* ── TITLE ── */
-#s-title{justify-content:center;min-height:100vh;text-align:center;gap:22px;}
-.logo{font-size:5rem;font-weight:900;letter-spacing:14px;background:linear-gradient(135deg,#7c6fe0,#b16cea,#6ee7f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.logo-sub{font-size:1rem;color:var(--dim);letter-spacing:6px;text-transform:uppercase;}
-.intro-box{max-width:440px;font-size:.9rem;color:#7a789a;line-height:2;border-left:2px solid var(--acc);padding-left:16px;text-align:left;}
-.btn-p{padding:14px 44px;border:none;border-radius:14px;background:linear-gradient(135deg,#7c6fe0,#b16cea);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;box-shadow:0 4px 28px rgba(124,111,224,.3);}
-.btn-p:hover{transform:translateY(-3px);box-shadow:0 8px 36px rgba(124,111,224,.5);}
-.btn-ghost{padding:10px 28px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--dim);font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
-.btn-ghost:hover{border-color:var(--acc);color:var(--text);}
+/* ── 공통 배경 ── */
+#d-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;background:#05050d;}
+#bg-img{width:auto;height:75vh;max-width:90%;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges;display:block;margin:auto;margin-top:5vh;}
+#d-vig{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:200;transition:opacity .15s;}
+#day-trans{display:none;position:fixed;inset:0;z-index:300;background:#000;pointer-events:none;opacity:0;}
+#crack-ov{display:none;position:fixed;inset:0;z-index:100;pointer-events:none;}
+#crack-ov.on{display:block;}
+#crack-ov canvas{position:absolute;inset:0;width:100%;height:100%;}
+#glitch-ov{display:none;position:fixed;inset:0;z-index:150;pointer-events:none;mix-blend-mode:screen;}
+#collapse-ov{display:none;position:fixed;inset:0;z-index:250;pointer-events:none;}
+#collapse-ov.on{display:block;animation:collapseFlash .6s ease-out forwards;}
+@keyframes collapseFlash{0%{background:rgba(255,50,50,0)}10%{background:rgba(255,50,50,0.85)}60%{background:rgba(255,50,50,0.2)}100%{background:rgba(255,50,50,0)}}
+.glitch-line{position:fixed;left:0;right:0;height:3px;pointer-events:none;z-index:260;animation:glitchLine .28s ease-out forwards;}
+@keyframes glitchLine{0%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(0.2)}}
+@keyframes glitch{0%{text-shadow:2px 0 #e07ca0,-1px 0 #6ee7f7}50%{text-shadow:-2px 0 #e07ca0,1px 0 #6ee7f7;transform:skewX(.8deg)}100%{text-shadow:none;transform:none}}
 
-/* ── DIALOG ── */
-#s-dialog{gap:0;min-height:100vh;justify-content:flex-end;padding-bottom:28px;}
-#d-bg{position:fixed;inset:0;z-index:0;transition:background 1.2s;}
-#d-scene{position:fixed;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-#scene-art{font-size:8rem;opacity:.3;transition:all 1.2s;filter:blur(1px);}
-#d-badge{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:rgba(124,111,224,.12);border:1px solid var(--acc);border-radius:20px;padding:5px 18px;font-size:.72rem;color:var(--acc);font-weight:700;letter-spacing:1px;z-index:5;}
-#d-sanity{position:fixed;top:18px;right:18px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
-#d-sanity .sl{font-size:.65rem;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
-#sanity-bar-wrap{width:100px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
-#sanity-bar{height:100%;background:var(--acc);border-radius:99px;transition:width .6s ease,background .6s;}
-#d-box{position:relative;z-index:2;width:100%;max-width:660px;background:rgba(13,13,28,.94);border:1px solid var(--border);border-radius:18px;padding:22px 26px;backdrop-filter:blur(14px);box-shadow:0 0 60px rgba(124,111,224,.12);}
-#d-speaker{font-size:.72rem;font-weight:700;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-#d-text{font-size:.97rem;line-height:1.85;min-height:56px;}
-#d-cursor{display:inline-block;animation:blink .75s infinite;}
+/* ── 타이틀 ── */
+#s-title{min-height:100vh;justify-content:center;align-items:center;gap:0;position:relative;overflow:hidden;}
+#t-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.ptc{position:absolute;border-radius:50%;opacity:0;animation:floatP linear infinite;}
+@keyframes floatP{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:.5}90%{opacity:.2}100%{transform:translateY(-40px) scale(1.4);opacity:0}}
+#t-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:0;text-align:center;padding:20px;}
+.t-eye{font-size:3.5rem;animation:eyeP 3s ease-in-out infinite;margin-bottom:10px;}
+@keyframes eyeP{0%,100%{transform:scale(1);filter:drop-shadow(0 0 16px #8b7cf8)}50%{transform:scale(1.1) rotate(3deg);filter:drop-shadow(0 0 32px #e07ca0)}}
+.t-logo{font-family:'Noto Serif KR',serif;font-size:4.5rem;font-weight:700;letter-spacing:16px;
+  background:linear-gradient(135deg,#8b7cf8,#b16cea,#e07ca0,#6ee7f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px;}
+.t-sub{font-size:.72rem;color:var(--dim);letter-spacing:10px;text-transform:uppercase;margin-bottom:20px;}
+.t-line{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--acc),transparent);margin:12px 0;}
+#t-prev-badge{font-size:.65rem;color:var(--acc);letter-spacing:2px;border:1px solid rgba(139,124,248,.3);border-radius:20px;padding:4px 14px;margin-bottom:16px;display:none;}
+
+/* 타이틀 메뉴 */
+#t-menu{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin-top:16px;}
+.tmb{padding:13px 20px;border-radius:14px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .25s;letter-spacing:1px;border:none;}
+.tmb-main{background:linear-gradient(135deg,#8b7cf8,#b16cea,#e07ca0);color:#fff;box-shadow:0 0 30px rgba(139,124,248,.3);}
+.tmb-main:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(139,124,248,.5);}
+.tmb-sec{background:rgba(139,124,248,.08);border:1px solid rgba(139,124,248,.25);color:var(--text);}
+.tmb-sec:hover{background:rgba(139,124,248,.15);border-color:var(--acc);}
+.tmb-sec:disabled{opacity:.3;cursor:not-allowed;}
+.tmb-sm{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:.75rem;padding:9px 16px;}
+.tmb-sm:hover{border-color:var(--dim);color:var(--text);}
+
+/* ── 프롤로그 ── */
+#s-prologue{background:transparent;min-height:100vh;justify-content:flex-end;padding-bottom:32px;gap:0;}
+#pro-bg-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:rgba(5,5,13,.75);}
+#pro-box{position:relative;z-index:2;width:100%;max-width:640px;background:rgba(10,10,24,.97);
+  border:1px solid rgba(20,20,58,.8);border-radius:20px;padding:22px 24px;backdrop-filter:blur(16px);}
+#pro-speaker{font-size:.6rem;font-weight:700;color:var(--acc);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+#pro-text{font-size:.92rem;line-height:2;min-height:52px;font-family:'Noto Serif KR',serif;font-weight:300;}
+#pro-cursor{display:inline-block;color:var(--acc);animation:blink .7s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-#d-next{margin-top:14px;width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--dim);font-size:.78rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+#pro-next{margin-top:14px;width:100%;padding:10px;background:transparent;border:1px solid var(--border);
+  border-radius:10px;color:var(--dim);font-size:.75rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+#pro-next:hover{border-color:var(--acc);color:var(--text);}
+
+/* ── 귀가/휴식 화면 ── */
+#s-rest{min-height:100vh;justify-content:center;align-items:center;gap:0;text-align:center;position:relative;}
+#rest-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:420px;padding:24px;}
+#rest-time{font-size:.65rem;color:var(--dim);letter-spacing:4px;text-transform:uppercase;}
+#rest-icon{font-size:3rem;margin:4px 0;}
+#rest-title{font-size:1.3rem;font-weight:700;font-family:'Noto Serif KR',serif;color:var(--text);}
+#rest-body{font-size:.85rem;color:#6a6890;line-height:2;font-family:'Noto Serif KR',serif;font-weight:300;max-width:360px;}
+#rest-sanity-row{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:4px;}
+#rest-san-lbl{font-size:.6rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+#rest-sbar-bg{width:180px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+#rest-sbar{height:100%;background:var(--acc);border-radius:99px;transition:width .9s ease,background .9s;}
+#rest-btn{margin-top:10px;padding:12px 40px;border:none;border-radius:14px;background:linear-gradient(135deg,rgba(139,124,248,.3),rgba(224,124,160,.3));
+  border:1px solid rgba(139,124,248,.3);color:var(--text);font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .25s;}
+#rest-btn:hover{background:linear-gradient(135deg,rgba(139,124,248,.5),rgba(224,124,160,.5));transform:translateY(-2px);}
+
+/* ── DAY 화면 ── */
+#s-day{min-height:100vh;justify-content:center;align-items:center;gap:18px;text-align:center;}
+#day-num{font-size:4.5rem;font-weight:900;font-family:'Noto Serif KR',serif;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+#day-title{font-size:.9rem;color:var(--dim);letter-spacing:4px;text-transform:uppercase;}
+#day-note{max-width:360px;font-size:.84rem;color:#6a6890;line-height:2;font-family:'Noto Serif KR',serif;}
+#day-sanity-row{display:flex;flex-direction:column;align-items:center;gap:6px;}
+#day-sanity-lbl{font-size:.62rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+#day-sbar-bg{width:200px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+#day-sbar{height:100%;background:var(--acc);border-radius:99px;transition:width .8s ease,background .8s;}
+.btn-start{padding:12px 36px;border:none;border-radius:14px;background:linear-gradient(135deg,#8b7cf8,#b16cea,#e07ca0);
+  color:#fff;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+  box-shadow:0 0 30px rgba(139,124,248,.3);transition:all .25s;letter-spacing:1px;}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(139,124,248,.5);}
+
+/* ── 대화 화면 ── */
+#s-dialog{gap:0;min-height:100vh;justify-content:flex-end;padding-bottom:24px;}
+#d-hud{display:none;position:fixed;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;
+  align-items:center;padding:12px 18px;background:linear-gradient(180deg,rgba(5,5,13,.92),transparent);}
+#d-badge{font-size:.6rem;color:var(--acc);font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  background:rgba(139,124,248,.1);border:1px solid rgba(139,124,248,.25);border-radius:20px;padding:4px 12px;}
+#d-day-lbl{font-size:.6rem;color:var(--dim);font-weight:700;letter-spacing:1px;}
+#san-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+#san-lbl{font-size:.56rem;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+#san-bg{width:80px;height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
+#san-bar{height:100%;background:var(--acc);border-radius:99px;transition:width .7s,background .7s;}
+#patient-note{display:none;position:fixed;top:56px;left:14px;z-index:20;
+  width:162px;background:rgba(8,8,20,.88);border:1px solid rgba(139,124,248,.2);border-radius:12px;
+  padding:10px 12px;backdrop-filter:blur(12px);font-family:'Noto Sans KR',sans-serif;}
+#pn-name{font-size:.68rem;font-weight:700;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+#pn-lines{display:flex;flex-direction:column;gap:3px;}
+.pn-row{font-size:.66rem;line-height:1.5;color:var(--dim);}
+.pn-row span{color:var(--text);}
+#d-box{position:relative;z-index:5;width:100%;max-width:640px;background:rgba(10,10,24,.95);
+  border:1px solid rgba(20,20,58,.8);border-radius:20px;padding:20px 22px;
+  backdrop-filter:blur(16px);box-shadow:0 -4px 40px rgba(139,124,248,.07);}
+#d-speaker{font-size:.6rem;font-weight:700;color:var(--acc);letter-spacing:3px;text-transform:uppercase;margin-bottom:9px;}
+#d-text-in{font-size:.92rem;line-height:1.9;min-height:50px;font-family:'Noto Serif KR',serif;font-weight:300;}
+#d-cursor{display:inline-block;color:var(--acc);animation:blink .7s infinite;}
+#d-next{margin-top:12px;width:100%;padding:10px;background:transparent;border:1px solid var(--border);
+  border-radius:10px;color:var(--dim);font-size:.75rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
 #d-next:hover{border-color:var(--acc);color:var(--text);}
-/* glitch effect on text */
-.glitch{animation:glitchText .15s infinite;}
-@keyframes glitchText{0%{text-shadow:2px 0 #e07ca0,-2px 0 #7c6fe0}50%{text-shadow:-2px 0 #e07ca0,2px 0 #7c6fe0}100%{text-shadow:2px 0 #7c6fe0,-2px 0 #e07ca0}}
-.crack{color:#e07ca0 !important;font-weight:700;}
+#d-choices{display:none;margin-top:10px;}
+.adv-label{font-size:.65rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.adv-btn{display:block;width:100%;margin-bottom:7px;padding:10px 14px;background:rgba(139,124,248,.06);
+  border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.82rem;
+  cursor:pointer;font-family:'Noto Serif KR',serif;text-align:left;transition:all .2s;line-height:1.6;}
+.adv-btn:hover{border-color:var(--acc);background:rgba(139,124,248,.12);}
+.adv-btn.good{border-color:rgba(74,222,128,.4);}
+.adv-btn.bad{border-color:rgba(248,113,113,.4);}
+.glitch-txt{animation:glitch .12s steps(1) infinite;}
 
-/* ── PUZZLE ── */
-#s-puzzle{gap:14px;min-height:100vh;padding-top:20px;}
-#pz-hd{text-align:center;}
-#pz-ch{font-size:.72rem;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
-#pz-title{font-size:1.3rem;font-weight:700;}
-#pz-desc{font-size:.8rem;color:var(--dim);margin-top:5px;line-height:1.6;max-width:500px;text-align:center;}
-#timer-wrap{width:100%;height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
-#timer-bar{height:100%;background:var(--acc);border-radius:99px;transition:width .1s linear,background .3s;}
-#pz-area{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;display:flex;flex-direction:column;align-items:center;gap:18px;}
-#pz-vis{width:100%;display:flex;justify-content:center;align-items:center;min-height:240px;flex-wrap:wrap;gap:12px;}
-canvas.pcv{border-radius:10px;border:1px solid var(--border);cursor:default;max-width:100%;}
-#pz-q{font-size:.95rem;font-weight:700;text-align:center;color:var(--text);}
-#pz-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-.cb{padding:11px 22px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;}
-.cb:hover{border-color:var(--acc);background:rgba(124,111,224,.1);}
-.cb.ok2{border-color:#34d399;background:rgba(52,211,153,.12);color:#34d399;}
-.cb.ng{border-color:#f87171;background:rgba(248,113,113,.08);color:#f87171;}
-#pz-fb{font-size:.88rem;font-weight:700;min-height:22px;text-align:center;transition:color .3s;line-height:1.6;max-width:480px;}
-#pz-fb.ok{color:#34d399;}#pz-fb.no{color:#f87171;}
-#hint-btn{font-size:.72rem;color:var(--dim);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'Noto Sans KR',sans-serif;}
-#hint-btn:hover{color:var(--text);}
-#hint-txt{font-size:.8rem;color:#9d8fe0;display:none;text-align:center;line-height:1.7;max-width:440px;}
+/* ── 퍼즐 ── */
+#s-puzzle{gap:12px;padding-top:20px;min-height:100vh;}
+#pz-top{text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;}
+#pz-badge{font-size:.6rem;color:var(--acc);letter-spacing:2px;text-transform:uppercase;}
+#pz-title{font-size:1.1rem;font-weight:700;}
+#pz-diff{font-size:.7rem;color:var(--warn);letter-spacing:1px;}
+#pz-desc{font-size:.76rem;color:var(--dim);max-width:480px;line-height:1.7;text-align:center;}
+#timer-track{width:100%;height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
+#timer-fill{height:100%;background:var(--acc);border-radius:99px;transition:width .1s linear,background .4s;}
+#pz-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px 16px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;}
+#pz-vis{width:100%;display:flex;justify-content:center;align-items:center;min-height:200px;flex-wrap:wrap;gap:8px;}
+canvas.pcv{border-radius:10px;border:1px solid var(--border);max-width:100%;}
+#pz-q{font-size:.88rem;font-weight:700;text-align:center;color:var(--text);font-family:'Noto Serif KR',serif;}
+#pz-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.cb{padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:var(--panel);
+  color:var(--text);font-size:.82rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.cb:hover{border-color:var(--acc);}
+.cb.ok2{border-color:#4ade80;color:#4ade80;}
+.cb.ng{border-color:#f87171;color:#f87171;}
+#pz-fb{font-size:.8rem;text-align:center;line-height:1.8;padding:0 8px;}
+#pz-fb.ok{color:#4ade80;}
+#pz-fb.no{color:#f87171;}
+#hint-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.hint-btn{padding:6px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;
+  color:var(--dim);font-size:.7rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.hint-btn:hover{border-color:var(--dim);color:var(--text);}
+#hint-txt{font-size:.74rem;color:#9d8fe0;display:none;text-align:center;line-height:1.8;max-width:420px;}
 
-/* ── CRACK OVERLAY ── */
-#crack-overlay{display:none;position:fixed;inset:0;z-index:50;pointer-events:none;background:transparent;}
-#crack-overlay.show{display:block;}
-#crack-overlay canvas{position:absolute;inset:0;width:100%;height:100%;}
+/* ── 엔딩 갤러리 ── */
+#s-gallery{min-height:100vh;justify-content:flex-start;padding-top:40px;gap:16px;}
+#gal-title{font-size:1.3rem;font-weight:700;font-family:'Noto Serif KR',serif;color:var(--acc);letter-spacing:3px;}
+#gal-sub{font-size:.72rem;color:var(--dim);letter-spacing:2px;}
+.gal-card{width:100%;max-width:500px;border:1px solid var(--border);border-radius:16px;padding:18px 20px;background:var(--panel);display:flex;align-items:center;gap:16px;}
+.gal-card.unlocked{border-color:rgba(139,124,248,.4);cursor:pointer;transition:all .2s;}
+.gal-card.unlocked:hover{border-color:var(--acc);background:rgba(139,124,248,.05);}
+.gal-card.locked{opacity:.35;}
+.gal-icon{font-size:2.2rem;}
+.gal-info{flex:1;}
+.gal-tag{font-size:.58rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.gal-name{font-size:.95rem;font-weight:700;font-family:'Noto Serif KR',serif;}
+.gal-desc{font-size:.72rem;color:var(--dim);line-height:1.6;margin-top:4px;}
+.gal-lock{font-size:.68rem;color:var(--dim);}
 
-/* ── CHOICE SCREEN ── */
-#s-choice{justify-content:center;min-height:100vh;gap:20px;text-align:center;}
-#s-choice h2{font-size:1.6rem;font-weight:900;}
-#s-choice p{color:var(--dim);font-size:.85rem;max-width:400px;line-height:1.8;}
-#s-choice .choices-wrap{display:flex;flex-direction:column;gap:12px;width:100%;max-width:440px;}
-.choice-card{padding:18px 22px;border:1px solid var(--border);border-radius:14px;background:var(--panel);cursor:pointer;transition:all .2s;text-align:left;}
-.choice-card:hover{border-color:var(--acc);transform:translateX(4px);}
-.choice-card .ct{font-size:.95rem;font-weight:700;margin-bottom:4px;}
-.choice-card .cd{font-size:.78rem;color:var(--dim);line-height:1.6;}
+/* ── 엔딩 ── */
+#s-end{justify-content:center;min-height:100vh;gap:18px;text-align:center;padding-top:40px;}
+.e-art{font-size:4rem;}
+.e-tag{font-size:.6rem;color:var(--dim);letter-spacing:3px;text-transform:uppercase;}
+.e-title{font-size:1.7rem;font-weight:900;font-family:'Noto Serif KR',serif;line-height:1.3;}
+.e-body{font-size:.85rem;color:#8885b0;line-height:2.1;max-width:430px;border-left:2px solid var(--acc2);padding-left:14px;text-align:left;font-family:'Noto Serif KR',serif;font-weight:300;}
+.btn-re{padding:12px 36px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font-size:.86rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.btn-re:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(139,124,248,.35);}
+.btn-g{padding:8px 22px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--dim);font-size:.74rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.btn-g:hover{border-color:var(--dim);color:var(--text);}
+#e-summary{width:100%;max-width:430px;}
 
-/* ── ENDING SCREENS ── */
-#s-end{justify-content:center;min-height:100vh;gap:22px;text-align:center;padding-top:40px;}
-.end-art{font-size:5rem;}
-.end-title{font-size:2rem;font-weight:900;line-height:1.3;}
-.end-body{font-size:.9rem;color:#8885b0;line-height:1.9;max-width:440px;border-left:2px solid var(--acc2);padding-left:16px;text-align:left;}
-.end-tag{font-size:.7rem;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+/* ── 설정 ── */
+#s-settings{min-height:100vh;justify-content:flex-start;padding-top:50px;gap:20px;}
+#set-title{font-size:1.3rem;font-weight:700;font-family:'Noto Serif KR',serif;color:var(--acc);letter-spacing:3px;}
+.set-row{width:100%;max-width:480px;display:flex;align-items:center;justify-content:space-between;
+  border:1px solid var(--border);border-radius:14px;padding:16px 20px;background:var(--panel);}
+.set-lbl{font-size:.85rem;color:var(--text);font-family:'Noto Sans KR',sans-serif;}
+.set-sub{font-size:.68rem;color:var(--dim);margin-top:3px;}
+.set-ctrl{display:flex;align-items:center;gap:10px;}
+.set-btn{padding:6px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;
+  color:var(--dim);font-size:.75rem;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.set-btn:hover,.set-btn.active{border-color:var(--acc);color:var(--acc);}
+.set-danger{border-color:rgba(248,113,113,.3)!important;color:#f87171!important;}
+.set-danger:hover{background:rgba(248,113,113,.08)!important;}
 </style>
 </head>
 <body>
 
-<!-- TITLE -->
+<!-- 공통 배경 레이어 -->
+<div id="d-bg"><img id="bg-img" src="" alt=""></div>
+<div id="d-vig"></div>
+<div id="flash"></div>
+<div id="day-trans"></div>
+<div id="crack-ov"><canvas id="crack-cv"></canvas></div>
+<div id="glitch-ov"></div>
+<div id="collapse-ov"></div>
+
+<!-- ══ 타이틀 ══ -->
 <div id="s-title" class="screen active">
-  <div class="logo">MIND</div>
-  <div class="logo-sub">균 열</div>
-  <div class="intro-box">
-    당신은 유능한 심리치료사입니다.<br>
-    수많은 환자들의 마음을 고쳐왔죠.<br><br>
-    그러나 오늘, 마지막 환자가<br>
-    당신에게 묻습니다.<br><br>
-    <span style="color:#a09ab8"><i>"선생님, 선생님은 괜찮으세요?"</i></span>
+  <div id="t-particles"></div>
+  <div id="t-inner">
+    <div class="t-eye" id="t-eye">&#128065;</div>
+    <div class="t-logo">MIND</div>
+    <div class="t-sub">서 &nbsp; 막</div>
+    <div class="t-line"></div>
+    <div id="t-prev-badge"></div>
+    <div id="t-menu">
+      <button class="tmb tmb-sec" id="btn-continue" onclick="continueGame()" disabled>&#9654;&nbsp; 이어하기</button>
+      <button class="tmb tmb-main" onclick="startNewGame()">&#10022;&nbsp; 새 게임</button>
+      <button class="tmb tmb-sec" onclick="showGallery()">&#9670;&nbsp; 엔딩 보기</button>
+      <button class="tmb tmb-sec" onclick="showSettings()">&#9881;&nbsp; 설정</button>
+      <button class="tmb tmb-sm" id="btn-reset" onclick="resetSave()" style="display:none;">&#8635; 저장 초기화</button>
+    </div>
   </div>
-  <button class="btn-p" onclick="startGame()">▶ 시작하기</button>
 </div>
 
-<!-- DIALOG -->
+
+<!-- ══ 설정 ══ -->
+<div id="s-settings" class="screen">
+  <div id="set-title">설 &nbsp; 정</div>
+  <div class="set-row">
+    <div><div class="set-lbl">텍스트 속도</div><div class="set-sub">타이핑 속도를 조절합니다</div></div>
+    <div class="set-ctrl">
+      <button class="set-btn" id="spd-slow" onclick="setTextSpeed('slow')">느리게</button>
+      <button class="set-btn active" id="spd-normal" onclick="setTextSpeed('normal')">보통</button>
+      <button class="set-btn" id="spd-fast" onclick="setTextSpeed('fast')">빠르게</button>
+    </div>
+  </div>
+  <div class="set-row">
+    <div><div class="set-lbl">저장 데이터 초기화</div><div class="set-sub">엔딩 기록과 이전 회차 기억이 삭제됩니다</div></div>
+    <button class="set-btn set-danger" onclick="resetSave()">초기화</button>
+  </div>
+  <div class="set-row">
+    <div><div class="set-lbl">버전</div><div class="set-sub">MIND — 서막</div></div>
+    <span style="font-size:.72rem;color:var(--dim);">v6.0</span>
+  </div>
+  <button class="btn-g" onclick="show('s-title')" style="margin-top:8px;">&#9664; 돌아가기</button>
+</div>
+
+<!-- ══ 프롤로그 ══ -->
+<div id="s-prologue" class="screen">
+  <div id="pro-bg-overlay"></div>
+  <div id="pro-box">
+    <div id="pro-speaker">나</div>
+    <div id="pro-text"><span id="pro-text-in"></span><span id="pro-cursor">▋</span></div>
+    <button id="pro-next" onclick="nextPrologue()">계속 ›</button>
+  </div>
+</div>
+
+<!-- ══ 귀가/휴식 ══ -->
+<div id="s-rest" class="screen">
+  <div style="position:fixed;inset:0;background:rgba(5,5,13,.8);z-index:0;pointer-events:none;"></div>
+  <div id="rest-inner" style="position:relative;z-index:1;">
+    <div id="rest-time"></div>
+    <div id="rest-icon"></div>
+    <div id="rest-title"></div>
+    <div id="rest-body"></div>
+    <div id="rest-sanity-row">
+      <div id="rest-san-lbl">정신력</div>
+      <div id="rest-sbar-bg"><div id="rest-sbar" style="width:100%"></div></div>
+    </div>
+    <button id="rest-btn" onclick="restNext()"></button>
+  </div>
+</div>
+
+<!-- ══ DAY 화면 ══ -->
+<div id="s-day" class="screen">
+  <div id="day-num">DAY 1</div>
+  <div id="day-title">첫째 날</div>
+  <div id="day-note"></div>
+  <div id="day-sanity-row">
+    <div id="day-sanity-lbl">현재 정신력</div>
+    <div id="day-sbar-bg"><div id="day-sbar" style="width:100%"></div></div>
+  </div>
+  <button class="btn-start" onclick="startDayPatients()">진료 시작</button>
+</div>
+
+<!-- ══ 대화 화면 ══ -->
 <div id="s-dialog" class="screen">
-  <div id="d-bg"></div>
-  <div id="d-scene"><div id="scene-art">🏥</div></div>
-  <div id="d-badge">PROLOGUE</div>
-  <div id="d-sanity"><div class="sl">정신력</div><div id="sanity-bar-wrap"><div id="sanity-bar" style="width:100%"></div></div></div>
+  <div id="d-hud">
+    <div id="d-badge">CASE</div>
+    <div id="d-day-lbl">DAY 1</div>
+    <div id="san-wrap"><div id="san-lbl">정신력</div><div id="san-bg"><div id="san-bar" style="width:100%"></div></div></div>
+  </div>
+  <div id="patient-note"><div id="pn-name">PATIENT</div><div id="pn-lines"></div></div>
   <div id="d-box">
-    <div id="d-speaker">???</div>
-    <div id="d-text"><span id="d-text-in"></span><span id="d-cursor">▍</span></div>
-    <button id="d-next" onclick="nextDialog()">계속 ▶</button>
+    <div id="d-speaker">치료사</div>
+    <div id="d-text-in"><span id="d-text-inner"></span><span id="d-cursor">▋</span></div>
+    <div id="d-choices"></div>
+    <button id="d-next">계속 ›</button>
   </div>
 </div>
 
-<!-- PUZZLE -->
+<!-- ══ 퍼즐 ══ -->
 <div id="s-puzzle" class="screen">
-  <div id="pz-hd">
-    <div id="pz-ch">CASE 1</div>
-    <div id="pz-title">착시의 이름</div>
+  <div id="pz-top">
+    <div id="pz-badge">PERCEPTION TEST</div>
+    <div id="pz-title"></div>
+    <div id="pz-diff"></div>
     <div id="pz-desc"></div>
   </div>
-  <div id="timer-wrap"><div id="timer-bar" style="width:100%"></div></div>
-  <div id="pz-area">
+  <div id="timer-track"><div id="timer-fill" style="width:100%"></div></div>
+  <div id="pz-card">
     <div id="pz-vis"></div>
     <div id="pz-q"></div>
     <div id="pz-btns"></div>
     <div id="pz-fb"></div>
-    <button id="hint-btn" onclick="toggleHint()">💡 힌트</button>
-    <div id="hint-txt"></div>
+    <div id="hint-wrap">
+      <button class="hint-btn" onclick="toggleHint()">힌트 보기 (−5 정신력)</button>
+      <div id="hint-txt"></div>
+    </div>
   </div>
 </div>
 
-<!-- CRITICAL CHOICE -->
-<div id="s-choice" class="screen">
-  <h2 id="choice-title">선택의 순간</h2>
-  <p id="choice-desc"></p>
-  <div class="choices-wrap" id="choices-wrap"></div>
+<!-- ══ 엔딩 갤러리 ══ -->
+<div id="s-gallery" class="screen">
+  <div id="gal-title">ENDING</div>
+  <div id="gal-sub">기록된 결말들</div>
+  <div id="gal-cards"></div>
+  <button class="btn-g" onclick="show('s-title')" style="margin-top:8px;">&#9664; 돌아가기</button>
 </div>
 
-<!-- ENDING -->
+<!-- ══ 엔딩 ══ -->
 <div id="s-end" class="screen">
-  <div class="end-art" id="end-art">🧠</div>
-  <div class="end-tag" id="end-tag">ENDING A</div>
-  <div class="end-title" id="end-title">제목</div>
-  <div class="end-body" id="end-body">내용</div>
-  <button class="btn-p" style="margin-top:8px" onclick="startGame()">🔄 다시 하기</button>
-  <button class="btn-ghost" onclick="showTitleScreen()">◀ 처음으로</button>
+  <div class="e-art" id="e-art">&#129504;</div>
+  <div class="e-tag" id="e-tag">ENDING</div>
+  <div class="e-title" id="e-title"></div>
+  <div class="e-body" id="e-body"></div>
+  <div id="e-summary"></div>
+  <button class="btn-re" onclick="startNewGame()">&#128260; 새 게임</button>
+  <button class="btn-g" onclick="show('s-title')">&#9664; 타이틀로</button>
 </div>
-
-<!-- CRACK OVERLAY -->
-<div id="crack-overlay"><canvas id="crack-cv"></canvas></div>
 
 <script>
-// ================================================================
-//  STATE
-// ================================================================
-let sanity = 100;      // 0~100
-let chIdx = 0;         // current chapter index
-let dIdx = 0;          // dialog line index
-let dMode = 'pre';     // 'pre' | 'post'
-let puzzleOk = false;
-let wrongCount = 0;    // total wrong answers across all puzzles
-let timerInt = null;
-let timeLeft = 0;
-let typing = false, typeInt = null, fullText = '';
-let charPos = 0;
-let crackAnim = null;
+var BG_FRAMES=[
+  "data:image/png;base64,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",
+  "data:image/png;base64,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",
+  "data:image/png;base64,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",
+  "data:image/png;base64,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",
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACCCAYAAADBq8MQAAAFYklEQVR4nO3dP4gdRQDH8XmXJxc0hadXaBA8PLAIpPMPgkKCZToDVsGQws5KbK1SiE0quyCSkEq4dGIhErugsRNS+eQEiRbRE86cuYTcs9B97K0zu7Mzs/ub3ff9QNj3NrOzc9xvd2Z2996bXP/gxbkBRFbUDcByI4CQIoCQmhYvPrlxX9mOXr13+qi6CfjPtPzm6+9/VrWjN2++9Ly6CSihC4aUNYCTxx5f/Kuur1tWy7nqKy+r6237tbXPVb6ubuRnals5f7hnLVysdy1d27veN5VzcW2fom70iy4YUgQQUtYu2Jh/x0yubqs8npo/3FuUta0vv3dt27RNuT2ufdnK2dqIvDgDWPfLihnTtR0vuvbhW66pXmjRBUPKGcC2l1xCLon41uVT3tUG5K2xC/a95BJySST1errZ4aELhhQBhJTXrTif21uudT7lbWPHuvFkXf0ht/ag43UrzufShq1M2/Ku7ULqd9WDvDgnIUjvyo3f1E2QOH/6Gef/teqCXWVtS9t2rnpSP33TVC/y0aoLrisb0kX6rm/79I1Pu5EHZsGQsp4BfW7o+z4cUK3XVsZWl+0Bgrr1rnbmpG4stKxqu+A2s1ifX3iqrpbZ73jQBUPKexZcNytumqUCLkGz4GV+KODd784vXl9+5YqwJePAhWhP5eBV1xHEcIwBIUUAIUUAIcUY0FMxzmMSkhYBtKh7auV183GpXNr9LuOdErpgSBFASB3qgvnsPPRtwqfkQ4kuGFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEEFIEMCPH5n+qm9A7ApiRvyZPqpvQu+n1b/8I3vitV59K2BQso6hPSI0JbyhCPy6NAbx2816ynZ177YnoOhShN4bgd8XrDDjf/dscWT9uHt29s1gaYw6tK7OVO9jfSdz0fnG278bk3Bvrzg+ovHbznllZXYveycH+jllZXTMH+ztJzoJotrv3YBAfet44C350987iTFZeFq/L5YC2nAEszn5H1o8vutjystrtVt8XirOfMcasrK4lHVNi+GrHgKnGbUMf/6E7zgAyVkMfuBMCqeiv6rp49VaKdpgP33k5ST0YliTfFbexsRG1/fb2dopmoOLZs+Ffpvjr1v+/oLsL2XxZ4cWrtzgLJra5uWmMMWY2my1ee4sIbxvZBBDp7O49MJe//DGqjpjwttmGSQikCCCkCCCkCODIBU1AIrZtuw0BhBQBhBQBhBQBhBQBhBQBhBQBhBQBhBQBhFXMBew2COCI9RWimP3xONZIzWazQ8uYOrpEAEeoeBZQcR+4bWgJIJJqG1rGgJAigJBK0gXzV20INf3l9/tRFVw4c9J89sUPSRrT1Jbnnj6aZD/IR5Iz4IUzJ1NUgyU0qFlw7Nk6xDKedft4FL8wqAAqDDX0fd8FCUUAM9Q29EM+S3MZBlIEEFIEEFIEcIT6eIollcmpE8ecX9OAYahOQi5t3c4qhHWzcWbBI5bLR3LUHQwEEId0cf2wrj7GgIgWE1oCOEJDuQtiDAGEGAGE1PTzb36KqiDV6b6pnrdPvRC9D+RnMLNg3wMlxQFR1KEK/UefftXqZ3j/7IkOW9OtwQRQIbR3iD0IcrqI3LVpih92SLMu5GUae6SWv9Ak1jId+TlSnEiSdcGpxl2xQv4631UPmsX+3rIYA/Y1k+6zjtgAp9w+5+FRFgEco1RDmxT7bhPmkOD7bmP7mQhgYjlOyHzb0/Vfw9mCSgDRG1tQuRWXmRzPoF0igJAK7oKX7UjN2aWt24vXQ7t89A9Nr+Lf63Sa9wAAAABJRU5ErkJggg==",
+  "data:image/png;base64,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",
+];
 
-// Final choice accumulator
-let choiceMade = null; // 'accept' | 'deny' | 'collapse'
-
-// ================================================================
-//  SANITY SYSTEM
-// ================================================================
-function setSanity(v) {
-  sanity = Math.max(0, Math.min(100, v));
-  const bar = document.getElementById('sanity-bar');
-  bar.style.width = sanity + '%';
-  bar.style.background = sanity > 60 ? '#7c6fe0' : sanity > 30 ? '#fbbf24' : '#f87171';
-  if (sanity <= 30) flashCrack();
+// ── 배경 시스템 ──
+var bgBreak=false;
+function getBgState(dIdx,forceBreak){
+  if(forceBreak||bgBreak)return 5;
+  if(dIdx<=1)return 0;if(dIdx===2)return 1;if(dIdx===3)return 2;
+  if(dIdx===4)return 3;if(dIdx===5)return 4;return 4;
 }
+function drawBg(dIdx,forceBreak){
+  var img=document.getElementById('bg-img');
+  if(img)img.src=BG_FRAMES[getBgState(dIdx,forceBreak)];
+}
+window.addEventListener('resize',function(){drawBg(dayIdx,bgBreak);});
 
-function loseSanity(n) { setSanity(sanity - n); }
+// ── 게임 상태 ──
+var sanity=100,dayIdx=0,patientIdx=0,dIdx=0,dMode='pre';
+var puzzleDone=false,wrongTotal=0,choiceMade=null;
+var endScore=0;
+var timerInt=null,timeLeft=0;
+var typing=false,typeInt=null,fullTxt='',charPos=0;
+var crackTmr=null;
+var prevEnding=null;
 
-// ================================================================
-//  CRACK OVERLAY
-// ================================================================
-function flashCrack() {
-  const ov = document.getElementById('crack-overlay');
-  const cv2 = document.getElementById('crack-cv');
-  cv2.width = window.innerWidth; cv2.height = window.innerHeight;
-  const ctx2 = cv2.getContext('2d');
-  ctx2.clearRect(0,0,cv2.width,cv2.height);
-  const n = 6 + Math.floor((100-sanity)/15);
-  for (let i=0;i<n;i++) {
-    ctx2.strokeStyle = `rgba(224,124,160,${0.15+Math.random()*0.25})`;
-    ctx2.lineWidth = 1 + Math.random()*2;
-    ctx2.beginPath();
-    let x=Math.random()*cv2.width, y=Math.random()*cv2.height;
-    ctx2.moveTo(x,y);
-    for(let j=0;j<5;j++){x+=(-60+Math.random()*120);y+=(-60+Math.random()*120);ctx2.lineTo(x,y);}
-    ctx2.stroke();
+// ── 저장 시스템 ──
+var saveData={
+  prevEnding:null,      // 마지막 엔딩 key
+  textSpeed:'normal',   // 텍스트 속도
+  unlockedEndings:[],   // 해금된 엔딩들
+  hasProgress:false,    // 이어하기 가능 여부
+  // 이어하기용 스냅샷
+  snap:null
+};
+
+function loadSave(){
+  try{
+    var s=localStorage.getItem('mind_save');
+    if(s)saveData=JSON.parse(s);
+    prevEnding=saveData.prevEnding||null;
+  }catch(e){}
+}
+function writeSave(){
+  try{localStorage.setItem('mind_save',JSON.stringify(saveData));}catch(e){}
+}
+function saveProgress(){
+  saveData.hasProgress=true;
+  saveData.snap={dayIdx:dayIdx,patientIdx:patientIdx,sanity:sanity,endScore:endScore,wrongTotal:wrongTotal,bgBreak:bgBreak};
+  writeSave();
+}
+function clearProgress(){
+  saveData.hasProgress=false;saveData.snap=null;writeSave();
+}
+function unlockEnding(key){
+  if(saveData.unlockedEndings.indexOf(key)===-1){
+    saveData.unlockedEndings.push(key);
   }
-  ov.classList.add('show');
-  clearTimeout(crackAnim);
-  crackAnim = setTimeout(()=>ov.classList.remove('show'), 600);
+  saveData.prevEnding=key;
+  prevEnding=key;
+  writeSave();
+}
+function resetSave(){
+  if(confirm('정말 모든 저장 데이터를 초기화할까요?')){
+    try{localStorage.removeItem('mind_save');}catch(e){}
+    saveData={prevEnding:null,unlockedEndings:[],hasProgress:false,snap:null};
+    prevEnding=null;
+    location.reload();
+  }
 }
 
-// ================================================================
-//  CHAPTERS / STORY DATA
-// ================================================================
-/* 
-  Structure:
-  - pre: dialog lines before puzzle
-  - puzzle: puzzle definition
-  - post: dialog lines after puzzle (can branch)
-  - Some chapters have a choice node instead of auto-advance
-*/
-
-const STORY = [
-
-  // ── CASE 1: 최민서 (색깔 착시) ──────────────────────────
+// ── DAYS 데이터 ──
+var DAYS=[
+  // DAY 1 — 기초 착시
   {
-    badge:'CASE 1 — 최민서',
-    art:'🪑', bg:'linear-gradient(180deg,#07070f,#0e0a1f)',
-    sanityHit: 0,
-    pre:[
-      {sp:'기록지', tx:'환자: 최민서, 27세. 주요 증상 — "색이 다르게 보임". 3개월 째 치료 진행 중.'},
-      {sp:'최민서', tx:'선생님... 오늘도 그 느낌이 들어요. 남자친구 얼굴이 화났을 때랑 웃을 때랑 완전히 다른 사람처럼 보여요.'},
-      {sp:'치료사', tx:'색채 인식 편향이 감정 상태에 따라 달라지는 거예요. 오늘 한 가지 실험을 해볼게요.'},
-      {sp:'최민서', tx:'...선생님은 항상 침착하시네요. 저도 그렇게 될 수 있을까요?'},
-      {sp:'치료사', tx:'(잠시 멈춤) ...물론이죠.'},
-    ],
-    puzzle:{
-      id:'color_same',
-      title:'같은 색, 다른 맥락',
-      desc:'배경이 다르면 같은 색도 다르게 보입니다. 이것은 뇌의 오류가 아니라 — 맥락 의존적 처리입니다.',
-      q:'두 원 안의 색은 실제로 같을까요, 다를까요?',
-      choices:['완전히 같다','약간 다르다','완전히 다르다'],
-      correct:'완전히 같다',
-      hint:'배경의 밝기를 가리고 원만 보세요. RGB값이 동일합니다.',
-      okTx:'정확해요. ─ 같은 것도 다르게 보일 수 있어요. 그게 틀린 게 아니에요.',
-      ngTx:'실제론 완전히 같은 색이에요. ─ 배경이 뇌를 속인 거예요.',
-      timeSec:12
-    },
-    post:[
-      {sp:'최민서', tx:'정말요... 같은 색이었군요. 저한테는 달라 보이는데.'},
-      {sp:'치료사', tx:'당신 뇌가 맥락을 읽는 거예요. 예민한 거예요, 고장난 게 아니라.'},
-      {sp:'최민서', tx:'(작게) 감사해요, 선생님. 선생님 덕분에 좀 나아지는 것 같아요.'},
-      {sp:'치료사', tx:'(차트에 메모한다. 좋은 진전.)'},
-    ]
-  },
-
-  // ── CASE 2: 박도현 (길이/크기 착시) ────────────────────
-  {
-    badge:'CASE 2 — 박도현',
-    art:'📏', bg:'linear-gradient(180deg,#07070f,#0f0e1a)',
-    sanityHit: 0,
-    pre:[
-      {sp:'기록지', tx:'환자: 박도현, 34세. 증상 — "물체 크기가 실제와 다르게 보임". 강박적 측정 행동 보고됨.'},
-      {sp:'박도현', tx:'선생님, 저 오늘도 줄자 세 번 다시 쟀어요. 책상이 어제보다 작아 보여서.'},
-      {sp:'치료사', tx:'박 씨, 책상은 어제랑 똑같아요.'},
-      {sp:'박도현', tx:'알아요. 근데 보여요. 선생님한테는 안 보이세요?'},
-      {sp:'치료사', tx:'뇌가 크기를 추론하는 방식 때문이에요. 제가 보여드릴게요.'},
-    ],
-    puzzle:{
-      id:'size_ebbinghaus',
-      title:'에빙하우스의 원',
-      desc:'주변 원들의 크기가 가운데 원을 다르게 보이게 만듭니다. 이것이 바로 박 씨가 경험하는 것과 같은 현상이에요.',
-      q:'왼쪽과 오른쪽 가운데 원, 어느 쪽이 더 크나요?',
-      choices:['왼쪽이 더 크다','오른쪽이 더 크다','같다'],
-      correct:'같다',
-      hint:'가운데 원만 손가락으로 가리고 비교해보세요. 주변을 차단하면 진짜 크기가 보여요.',
-      okTx:'맞아요. ─ 주변이 본질을 왜곡해요. 박 씨가 느끼는 것도 바로 이거예요.',
-      ngTx:'실제론 같은 크기예요. ─ 주변 맥락이 판단을 바꾸는 거예요.',
-      timeSec:13
-    },
-    post:[
-      {sp:'박도현', tx:'...같은 크기라고요? 오른쪽이 훨씬 크게 보이는데.'},
-      {sp:'치료사', tx:'줄자로 재면 같아요. 박 씨의 뇌가 주변을 과도하게 읽는 거예요.'},
-      {sp:'박도현', tx:'그럼... 제 주변 사람들이 저를 작게 보이게 만드는 건가요?'},
-      {sp:'치료사', tx:'(잠깐 멈춤) ...그건 다음에 이야기해요.'},
-    ]
-  },
-
-  // ── CASE 3: 이수진 (운동/회전 착시) ─────────────────────
-  {
-    badge:'CASE 3 — 이수진',
-    art:'🌀', bg:'linear-gradient(180deg,#07070f,#100a18)',
-    sanityHit: 5,
-    pre:[
-      {sp:'기록지', tx:'환자: 이수진, 31세. 증상 — "정지한 것이 움직여 보임". 수면 장애, 불안 발작 동반.'},
-      {sp:'이수진', tx:'선생님, 저 진짜 미쳐가는 것 같아요. 벽지 무늬가 움직여요.'},
-      {sp:'치료사', tx:'미친 게 아니에요. 시각 피질이 패턴을 운동으로 해석하는 거예요.'},
-      {sp:'이수진', tx:'그게 정상이에요?'},
-      {sp:'치료사', tx:'완벽하게 정상이에요. 지금 보여드릴게요.'},
-      {sp:'이수진 (작게)', tx:'...선생님도 가끔 이런 거 보이지 않으세요?'},
-      {sp:'치료사', tx:'(순간 굳어지며) ...아니요. 아니에요.'},
-    ],
-    puzzle:{
-      id:'rotation',
-      title:'멈춰 있는 소용돌이',
-      desc:'패턴을 가만히 바라보세요. 뇌의 V5 영역이 움직임을 감지하려다 착각을 일으킵니다.',
-      q:'이 도형들은 지금 실제로 움직이고 있나요?',
-      choices:['움직이고 있다','정지해 있다'],
-      correct:'정지해 있다',
-      hint:'화면 모서리를 보거나 눈을 빠르게 깜빡이면 착시가 약해져요.',
-      okTx:'정지해 있어요. ─ 하지만 당신이 움직임을 본 것도 사실이에요.',
-      ngTx:'정지해 있어요. ─ 뇌가 패턴에서 운동을 추출한 거예요.',
-      timeSec:15
-    },
-    post:[
-      {sp:'이수진', tx:'...정말 안 움직여요? 저는 분명히 돌아가는 걸 봤는데.'},
-      {sp:'치료사', tx:'당신 눈이 거짓말한 게 아니에요. 당신 뇌가 너무 예민하게 반응하는 거예요.'},
-      {sp:'이수진', tx:'선생님은... 항상 확신하는 것처럼 말하시는데, 선생님도 가끔 의심 안 하세요?'},
-      {sp:'치료사', tx:'(긴 침묵) ...오늘은 여기까지 해요.'},
-      {sp:'내레이션', tx:'(무언가 흔들리는 느낌. 나는 그것을 무시하기로 했다.)'},
-    ]
-  },
-
-  // ── CASE 4: 강준혁 (음과 양 / 반전 착시) ────────────────
-  {
-    badge:'CASE 4 — 강준혁',
-    art:'🌗', bg:'linear-gradient(180deg,#07070f,#0a0f14)',
-    sanityHit: 10,
-    pre:[
-      {sp:'기록지', tx:'환자: 강준혁, 41세. 증상 — "밝은 것이 어둡게, 어두운 것이 밝게 보임". 과거 외상 이력 있음.'},
-      {sp:'강준혁', tx:'선생님, 저는 사람을 반대로 봐요. 웃는 사람이 슬퍼 보이고, 우는 사람이 안도한 것처럼 보여요.'},
-      {sp:'치료사', tx:'감정 인식 역전... 트라우마로 인한 표정 처리 왜곡일 수 있어요.'},
-      {sp:'강준혁', tx:'선생님도 그런 적 없으세요? 진짜인 것과 거짓인 것이 뒤바뀌어 보이는 느낌.'},
-      {sp:'치료사', tx:'(불편한 기색) 저는 치료사예요, 강 씨.'},
-      {sp:'강준혁', tx:'(미소를 지으며) 알아요. 그게 답이 아니라는 것도 알아요.'},
-    ],
-    puzzle:{
-      id:'negative_space',
-      title:'음화(陰畫) — 뒤집힌 세계',
-      desc:'밝고 어두운 것이 바뀌면 세상이 다르게 보입니다. 이것이 강준혁 씨가 매일 경험하는 것이에요.',
-      q:'이 이미지에서 "얼굴"은 어디에 있나요?',
-      choices:['흰색 부분','검은 부분','둘 다'],
-      correct:'둘 다',
-      hint:'루빈의 꽃병. 시선을 전환하면 꽃병도, 얼굴도 보여요. 하나의 정답은 없어요.',
-      okTx:'맞아요. ─ 둘 다 진짜예요. 어느 것을 먼저 보느냐의 문제예요.',
-      ngTx:'둘 다 맞아요. ─ 관점을 바꾸면 진실도 달라져 보일 수 있어요.',
-      timeSec:14
-    },
-    post:[
-      {sp:'강준혁', tx:'둘 다... 맞군요.'},
-      {sp:'치료사', tx:'관점이 달라지면 진실도 달라 보이는 거예요.'},
-      {sp:'강준혁', tx:'(조용히) 선생님은 지금 저한테 치료하는 거예요, 아니면 자신한테 하는 거예요?'},
-      {sp:'치료사', tx:'(갑자기 심장이 빠르게 뛴다. 무슨 말을 하는 거지.)'},
-      {sp:'내레이션', tx:'균열이 조금씩 커지고 있다. 나는 느끼지 못했다.'},
-    ]
-  },
-
-  // ── CASE 5: 마지막 환자 — "김하은" ─────────────────────
-  // 이 환자가 전부를 무너뜨린다
-  {
-    badge:'CASE 5 — 김하은',
-    art:'🕯️', bg:'linear-gradient(180deg,#07070f,#1a0a0a)',
-    sanityHit: 20,
-    pre:[
-      {sp:'기록지', tx:'환자: 김하은. 나이 미상. 의뢰인 불명. ─ 이 기록이 이상하다. 내가 직접 작성한 기억이 없다.'},
-      {sp:'김하은', tx:'안녕하세요, 선생님.'},
-      {sp:'치료사', tx:'...안녕하세요. 오늘 처음 오셨나요?'},
-      {sp:'김하은', tx:'아니요. 우리 오래 알았어요. 선생님이 모를 뿐이에요.'},
-      {sp:'치료사', tx:'(차트를 뒤적인다. 이 이름이 없다.) ...기록이 없는데요.'},
-      {sp:'김하은', tx:'선생님, 저한테 하셨던 말 기억하세요? "현실이 달라 보일 때, 맥락을 의심하라"고.'},
-      {sp:'치료사', tx:'(그건... 내가 환자들에게 하는 말이다.) 그걸 어떻게...'},
-      {sp:'김하은', tx:'선생님이 저한테 하셨잖아요. 3년 전에. 선생님이 저의 치료사였잖아요.'},
-      {sp:'치료사', tx:'제가... 치료를 받은 적이 없어요.'},
-      {sp:'김하은 (조용히)', tx:'정말요?'},
-    ],
-    puzzle:{
-      id:'ponzo_reality',
-      title:'폰조의 함정 — 무엇이 더 가까운가',
-      desc:'원근법이 만드는 착시입니다. 멀리 있는 것처럼 보이는 것이 실제로는 가까이 있을 수 있어요.',
-      q:'위쪽 가로선과 아래쪽 가로선 중 어느 것이 더 길까요?',
-      choices:['위쪽이 더 길다','아래쪽이 더 길다','같다'],
-      correct:'같다',
-      hint:'두 선이 같은 길이예요. 하지만 철로의 원근감이 위 선을 더 멀리, 더 크게 인식하게 만들어요.',
-      okTx:'같아요. ─ 원근이 진실을 가려요. 가까운 것과 먼 것이 바뀌어 보일 수 있어요.',
-      ngTx:'같은 길이예요. ─ 당신이 본 것은 현실이 아니라 뇌의 해석이에요.',
-      timeSec:10
-    },
-    post:[
-      {sp:'김하은', tx:'선생님, 저도 잘 알아요. 선생님이 기억을 지우는 방식을.'},
-      {sp:'치료사', tx:'무슨 말을 하는 거예요.'},
-      {sp:'김하은', tx:'선생님이 저한테 가르쳐 줬잖아요. 견디기 너무 힘든 기억은 착시처럼 다르게 보이도록 뇌가 재구성한다고.'},
-      {sp:'치료사', tx:'그건 환자들에게 설명하는 개념이에요.'},
-      {sp:'김하은', tx:'네. 맞아요. 선생님이 환자였을 때도 그렇게 설명해줬어요. 선생님 자신의 치료사가.'},
-      {sp:'치료사', tx:'(심장이 내려앉는 느낌. 이건... 아니다. 내가 치료사다. 나는 멀쩡하다.)'},
-      {sp:'김하은', tx:'선생님, 지금 이 방을 한번 둘러봐요.'},
-      {sp:'내레이션', tx:'(나는 고개를 들었다. 그리고 처음으로 — 이 방에 창문이 없다는 것을 깨달았다.)'},
-    ]
-  },
-
-  // ── 붕괴 직전 — 선택의 순간 ────────────────────────────
-  {
-    badge:'균열',
-    art:'🪞', bg:'linear-gradient(180deg,#1a0505,#0a0007)',
-    sanityHit: 25,
-    pre:[
-      {sp:'김하은', tx:'선생님, 여기 들어온 지 얼마나 됐어요?'},
-      {sp:'치료사', tx:'...모르겠어요.'},
-      {sp:'김하은', tx:'최민서 씨, 박도현 씨, 이수진 씨, 강준혁 씨. 그 분들이 실제로 있었나요?'},
-      {sp:'치료사', tx:'물론이에요. 나는 그들을 치료했어요.'},
-      {sp:'김하은', tx:'아니면... 선생님 안에 있는 조각들이었을까요?'},
-      {sp:'치료사', tx:'(손이 떨린다. 아니야. 아니야. 나는 치료사야.)'},
-      {sp:'김하은', tx:'색이 다르게 보이는 것, 크기가 왜곡되는 것, 움직이는 것처럼 보이는 것, 밝고 어두운 것이 바뀌는 것.'},
-      {sp:'김하은', tx:'선생님, 그게 다 선생님 이야기예요.'},
-      {sp:'치료사', tx:'(모든 것이 뒤집히는 것 같다.)'},
-      {sp:'내레이션', tx:'지금 이 순간, 모든 것이 선택으로 수렴한다.'},
-    ],
-    puzzle:{
-      id:'cafe_wall',
-      title:'카페월 착시 — 평행의 거짓말',
-      desc:'모든 가로줄은 완벽히 평행합니다. 하지만 뇌는 기울어졌다고 말해요. 지금 당신의 현실처럼.',
-      q:'이 가로줄들은 평행한가요, 기울어져 있나요?',
-      choices:['평행하다','기울어져 있다','모르겠다'],
-      correct:'평행하다',
-      hint:'한 줄만 손가락으로 따라가 보세요. 실제로는 완벽하게 수평이에요.',
-      okTx:'평행해요. ─ 현실은 변하지 않았어요. 보이는 방식이 바뀐 거예요.',
-      ngTx:'평행해요. ─ 지금 당신에게 기울어져 보인다고 해서 현실이 바뀐 건 아니에요.',
-      timeSec:10
-    },
-    isChoice: true,
-    choiceTitle:'당신은 지금 누구인가요?',
-    choiceDesc:'김하은의 말 앞에서, 당신은 선택해야 합니다.',
-    choices:[
+    dayNum:1, title:"첫째 날",
+    note:"오늘은 평범한 하루입니다.\n새로운 환자 세 명이 예약되어 있어요.\n책상 위 화분의 꽃이 활짝 피어 있다.",
+    bg:"linear-gradient(180deg,#05050d,#0e0a20)",
+    patients:[
       {
-        label:'나는 치료사다. 이것은 환자의 조작이다.',
-        desc:'내 기억을 믿는다. 나는 정상이다.',
-        key:'deny'
+        name:"최민서", age:27, art:"&#128169;",
+        badge:"DAY 1 — 최민서",
+        pre:[
+          {sp:"기록지", tx:"환자 최민서, 27세. 증상: 색채 인식 이상. 감정에 따라 주변 색이 달라 보인다."},
+          {sp:"최민서", tx:"선생님, 남자친구 얼굴이 화날 때는 빨갛게, 웃을 때는 회색으로 보여요."},
+          {sp:"치료사", tx:"색채 감정 투사예요. 오늘 테스트를 해볼게요."}
+        ],
+        puzzle:{
+          id:"color_contrast", diff:1,
+          title:"동시 색채 대비",
+          desc:"배경이 달라지면 같은 색도 달라 보입니다. 가장 기본적인 착시입니다.",
+          q:"두 원 안의 색은 실제로 같을까요?",
+          choices:["완전히 같다","다르다"],
+          correct:"완전히 같다",
+          hint:"배경을 손으로 가리고 원만 보세요.",
+          okTx:"정확해요. 같은 색도 맥락에 따라 달라 보입니다.",
+          ngTx:"실제로는 같은 색이에요. 배경이 뇌를 속인 겁니다.",
+          timeSec:15
+        },
+        post:[
+          {sp:"최민서", tx:"정말요... 저한테는 달라 보이는데."},
+          {sp:"치료사", tx:"당신 뇌가 맥락을 과도하게 읽는 거예요. 이상한 게 아니에요."},
+          {advices:[
+            {tx:"뇌가 틀린 게 아니라 더 예민하게 보정하는 거예요. 강점이 될 수 있어요.", end:"deny", resp:"최민서가 처음으로 작게 미소 지었다."},
+            {tx:"맥락 의존적 인식은 심각한 문제일 수 있어요. 약물 치료를 고려해봐야 해요.", end:"collapse", resp:"최민서의 표정이 굳었다. 뭔가 잘못됐다."},
+            {tx:"시간이 해결해줄 거예요. 일단 지켜봅시다.", end:"accept", resp:"최민서는 고개를 끄덕였지만 눈빛이 흐려졌다."}
+          ]},
+          {sp:"최민서", tx:"감사해요, 선생님."}
+        ]
       },
       {
-        label:'어쩌면... 나도 환자였을지 모른다.',
-        desc:'모든 것을 다시 본다. 처음부터.',
-        key:'accept'
+        name:"김재우", age:19, art:"&#127891;",
+        badge:"DAY 1 — 김재우",
+        pre:[
+          {sp:"기록지", tx:"환자 김재우, 19세. 고등학생. 증상: 선의 길이가 매번 다르게 느껴진다."},
+          {sp:"김재우", tx:"수학 시험지에서 선분 길이 문제를 항상 틀려요. 다 다르게 보여서요."},
+          {sp:"치료사", tx:"뮬러-라이어 효과일 수 있어요. 화살표가 길이 인식을 바꿔요."}
+        ],
+        puzzle:{
+          id:"muller_lyer", diff:1,
+          title:"뮬러-라이어 착시",
+          desc:"화살표 방향이 선의 길이 인식을 완전히 바꿉니다. 1889년에 발견된 고전적 착시입니다.",
+          q:"A선과 B선 중 어느 쪽이 더 길까요?",
+          choices:["A가 더 길다","B가 더 길다","같다"],
+          correct:"같다",
+          hint:"화살표를 무시하고 선의 끝과 끝만 보세요.",
+          okTx:"같아요. 화살표가 길이 인식을 왜곡한 겁니다.",
+          ngTx:"실제로는 같은 길이예요. 화살표 방향이 뇌를 속인 겁니다.",
+          timeSec:14
+        },
+        post:[
+          {sp:"김재우", tx:"...진짜요? 완전히 달라 보이는데."},
+          {sp:"치료사", tx:"수학 선생님께도 말씀드려요. 이건 당신 잘못이 아니에요."},
+          {sp:"김재우", tx:"(처음으로 안도하는 표정)"}
+        ]
       },
       {
-        label:'(아무 말도 하지 않는다)',
-        desc:'침묵한다. 현실도 기억도 포기한다.',
-        key:'collapse'
+        name:"서윤아", age:44, art:"&#128101;",
+        badge:"DAY 1 — 서윤아",
+        pre:[
+          {sp:"기록지", tx:"환자 서윤아, 44세. 증상: 물체 크기가 실제와 다르게 보임. 강박적 확인 행동."},
+          {sp:"서윤아", tx:"오늘 아침에 냉장고가 어제보다 작아 보였어요. 자로 재봤는데 같더라고요."},
+          {sp:"치료사", tx:"에빙하우스 효과예요. 주변 물체가 크기 인식에 영향을 줍니다."}
+        ],
+        puzzle:{
+          id:"ebbinghaus", diff:1,
+          title:"에빙하우스 착시",
+          desc:"주변 원의 크기가 중심 원의 크기 인식을 완전히 바꿉니다.",
+          q:"왼쪽과 오른쪽 가운데 원, 크기가 같을까요?",
+          choices:["왼쪽이 크다","오른쪽이 크다","같다"],
+          correct:"같다",
+          hint:"가운데 원만 손가락으로 가리고 비교하세요.",
+          okTx:"맞아요. 주변이 중심을 왜곡합니다.",
+          ngTx:"실제로 같은 크기예요. 주변 원이 판단을 바꾼 겁니다.",
+          timeSec:13
+        },
+        post:[
+          {sp:"서윤아", tx:"매번 속는다는 게 무서워요."},
+          {sp:"치료사", tx:"모두가 속아요. 당신이 특별히 예민한 게 아니에요."},
+          {sp:"서윤아", tx:"그냥 저만 그런 건 아니라는 게 조금 위안이 돼요."},
+          {sp:"치료사", tx:"당연히 혼자가 아니에요. 다음 주에 다시 봐요."}
+        ]
       }
     ]
   },
+
+  // DAY 2
+  {
+    dayNum:2, title:"둘째 날",
+    note:"어제보다 피로가 조금 쌓였습니다.\n오늘도 세 명의 환자가 기다리고 있어요.\n화분의 꽃은 여전히 흰색이다.",
+    bg:"linear-gradient(180deg,#05050d,#0f0e1a)",
+    patients:[
+      {
+        name:"한준혁", age:35, art:"&#127968;",
+        badge:"DAY 2 — 한준혁",
+        pre:[
+          {sp:"기록지", tx:"환자 한준혁, 35세. 건축가. 직선이 곡선으로 보이는 증상."},
+          {sp:"한준혁", tx:"도면 작업을 할 수가 없어요. 직선을 그리는데 자꾸 휘어 보여요."},
+          {sp:"치료사", tx:"카페월 착시거나 분트 착시일 수 있어요. 보여드릴게요."}
+        ],
+        puzzle:{
+          id:"cafe_wall", diff:2,
+          title:"카페월 착시",
+          desc:"타일의 배열이 평행선을 사다리꼴로 보이게 만듭니다. 1979년 리처드 그레고리가 브리스톨의 카페에서 발견했어요.",
+          q:"이 가로줄들은 평행한가요, 기울어져 있나요?",
+          choices:["평행하다","위로 기울어졌다","아래로 기울어졌다"],
+          correct:"평행하다",
+          hint:"한 줄만 손가락으로 끝에서 끝까지 따라가 보세요.",
+          okTx:"평행해요. 타일의 오프셋이 기울어져 보이게 만든 겁니다.",
+          ngTx:"실제로는 완벽히 평행해요. 모르타르 줄이 착각을 만든 겁니다.",
+          timeSec:12
+        },
+        post:[
+          {sp:"한준혁", tx:"믿을 수가 없어요. 자로 대봐도 평행하게 안 보이는데."},
+          {sp:"치료사", tx:"알아도 바뀌지 않는 게 이 착시의 특성이에요."},
+          {sp:"한준혁", tx:"...그럼 고칠 수 없는 건가요?"},
+          {sp:"치료사", tx:"알고 대처하는 것과, 모르고 당하는 건 달라요."}
+        ]
+      },
+      {
+        name:"이수진", age:31, art:"&#127744;",
+        badge:"DAY 2 — 이수진",
+        pre:[
+          {sp:"기록지", tx:"환자 이수진, 31세. 정지한 것이 움직여 보임. 수면 장애 동반."},
+          {sp:"이수진", tx:"선생님, 저 벽지가 자꾸 꿈틀거려요. 미쳐가는 것 같아요."},
+          {sp:"치료사", tx:"시각 피질이 패턴을 운동으로 해석하는 거예요. 아주 흔해요."},
+          {sp:"이수진", tx:"선생님도 그런 거 보여요?"},
+          {sp:"치료사", tx:"(굳어지며) ...아니요."}
+        ],
+        puzzle:{
+          id:"rotation", diff:2,
+          title:"회전하는 뱀",
+          desc:"이 패턴들은 완전히 정지해 있습니다. 그러나 뇌의 V5 영역이 운동을 감지합니다.",
+          q:"이 원들은 실제로 회전하고 있나요?",
+          choices:["회전하고 있다","정지해 있다"],
+          correct:"정지해 있다",
+          hint:"화면 가장자리를 보거나 눈을 깜빡이면 착시가 약해져요.",
+          okTx:"정지해 있어요. 뇌가 명암 패턴을 움직임으로 해석한 겁니다.",
+          ngTx:"정지해 있어요. V5 시각 피질이 패턴에 반응한 겁니다.",
+          timeSec:12
+        },
+        post:[
+          {sp:"이수진", tx:"분명히 돌고 있는데... 정말 안 움직여요?"},
+          {sp:"치료사", tx:"안 움직여요. 하지만 당신이 본 것도 거짓이 아니에요."},
+          {sp:"이수진", tx:"선생님은 확신하는 것처럼 말하는데, 의심 안 해요?"},
+          {advices:[
+            {tx:"확신은 치료사의 역할이에요. 당신이 흔들릴수록 내가 중심을 잡아야 해요.", end:"deny", resp:"이수진이 고개를 끄덕였다. 나도 그렇게 믿고 싶었다."},
+            {tx:"솔직히 말하면, 저도 가끔 의심해요.", end:"collapse", resp:"이수진의 눈이 커졌다. 치료사도요? 뭔가 균열이 생겼다."},
+            {tx:"그건 중요하지 않아요. 당신의 증상에 집중해요.", end:"accept", resp:"이수진이 입을 다물었다. 나도 대답하고 싶지 않았다."}
+          ]},
+          {sp:"치료사", tx:"(긴 침묵)"},
+          {sp:"내레이션", tx:"무언가 흔들렸다. 나는 무시했다."}
+        ]
+      },
+      {
+        name:"박도현", age:34, art:"&#128221;",
+        badge:"DAY 2 — 박도현",
+        pre:[
+          {sp:"기록지", tx:"환자 박도현, 34세. 공간 왜곡 인식. 폰조 착시 반응 강함."},
+          {sp:"박도현", tx:"지하철에서 멀리 있는 사람이 너무 작아 보여서 실제로 작은 사람인 줄 알았어요."},
+          {sp:"치료사", tx:"폰조 착시예요. 원근감이 크기 판단을 왜곡해요."}
+        ],
+        puzzle:{
+          id:"ponzo", diff:2,
+          title:"폰조 착시",
+          desc:"철로처럼 수렴하는 선 위에서 같은 크기의 막대도 다르게 보입니다. 원근 단서가 크기 판단을 바꿔요.",
+          q:"위쪽 선과 아래쪽 선, 어느 쪽이 더 길까요?",
+          choices:["위쪽이 더 길다","아래쪽이 더 길다","같다"],
+          correct:"같다",
+          hint:"두 선만 잘라서 따로 비교해보세요.",
+          okTx:"같아요. 원근감이 크기 인식을 왜곡합니다.",
+          ngTx:"실제로 같은 길이예요. 수렴선이 원근 단서를 만들어낸 겁니다.",
+          timeSec:12
+        },
+        post:[
+          {sp:"박도현", tx:"...같은 길이라고요. 말도 안 돼."},
+          {sp:"치료사", tx:"원근법이 뇌에 깊이 각인되어 있어서 쉽게 바뀌지 않아요."},
+          {sp:"박도현", tx:"그럼 저는 평생 이렇게 봐야 하는 건가요?"},
+          {sp:"치료사", tx:"알고 나면 조금씩 달라져요."}
+        ]
+      }
+    ]
+  },
+
+  // DAY 3
+  {
+    dayNum:3, title:"셋째 날",
+    note:"조금 이상한 느낌이 듭니다.\n하지만 환자들이 기다리고 있어요.\n출근하니 꽃잎이 떨어져 있었다.",
+    bg:"linear-gradient(180deg,#05050d,#0f0a18)",
+    sanityHit:5,
+    patients:[
+      {
+        name:"오현우", age:28, art:"&#128336;",
+        badge:"DAY 3 — 오현우",
+        pre:[
+          {sp:"기록지", tx:"환자 오현우, 28세. 직선이 구부러져 보임. 헤링 착시 반응."},
+          {sp:"오현우", tx:"선생님, 오늘 도로 차선이 물결치는 것처럼 보였어요."},
+          {sp:"오현우", tx:"혹시 선생님도 착시를 연구하다 보면 더 잘 보이게 되나요?"},
+          {advices:[
+            {tx:"치료사는 관찰자예요. 직접 겪지 않아요.", end:"deny", resp:"오현우가 고개를 끄덕였다. 나는 그 말을 믿으려 했다."},
+            {tx:"가끔... 비슷한 게 보이기도 해요. 연구를 오래 하다 보면요.", end:"collapse", resp:"오현우의 눈이 반짝였다. 그렇죠? 저만 그런 게 아니죠? 실수였다."},
+            {tx:"그 질문은 치료와 관계없어요. 테스트를 시작하죠.", end:"accept", resp:"오현우가 살짝 움츠렸다. 나는 화제를 돌렸다."}
+          ]},
+          {sp:"치료사", tx:"오늘 테스트가 그걸 보여줄 거예요."}
+        ],
+        puzzle:{
+          id:"hering", diff:3,
+          title:"헤링 착시",
+          desc:"방사형 배경 위에서 직선이 휘어 보입니다. 대뇌 피질의 공간 주파수 분석 때문입니다.",
+          q:"두 보라색 가로선은 평행한가요?",
+          choices:["평행하다","가운데가 볼록하다","가운데가 오목하다"],
+          correct:"평행하다",
+          hint:"화면을 눕혀서 보거나 자를 대보세요.",
+          okTx:"평행해요. 방사선이 곡률 인식을 왜곡한 겁니다.",
+          ngTx:"완벽히 평행해요. 방사 패턴이 뇌의 선 감지를 교란시킨 겁니다.",
+          timeSec:11
+        },
+        post:[
+          {sp:"오현우", tx:"평행하다고요... 자를 대도 휘어 보이는데."},
+          {sp:"치료사", tx:"알아도 바뀌지 않는 게 헤링 착시예요."},
+          {sp:"오현우", tx:"그럼 저도 계속 이렇게 보이는 게 정상인 거죠?"},
+          {sp:"치료사", tx:"정상이에요. 그냥 뇌가 그렇게 작동하는 거예요."}
+        ]
+      },
+      {
+        name:"강준혁", age:41, art:"&#127759;",
+        badge:"DAY 3 — 강준혁",
+        pre:[
+          {sp:"기록지", tx:"환자 강준혁, 41세. 외상 이력. 밝고 어두운 것이 뒤바뀌어 보임."},
+          {sp:"강준혁", tx:"오늘은 선생님한테 질문 하나 해도 될까요."},
+          {sp:"치료사", tx:"말씀하세요."},
+          {sp:"강준혁", tx:"선생님은 치료사가 되기 전에... 어디에 계셨어요?"},
+          {sp:"치료사", tx:"(갑자기 기억이 흐릿해지는 느낌) ...공부를 했죠."}
+        ],
+        puzzle:{
+          id:"checker_shadow", diff:3,
+          title:"아델슨 체커 그림자",
+          desc:"세계에서 가장 많이 연구된 착시 중 하나입니다. A칸과 B칸은 완전히 같은 회색입니다. 절대 그렇게 보이지 않지만.",
+          q:"체스판의 A칸과 B칸은 같은 색인가요?",
+          choices:["완전히 같다","A가 더 어둡다","B가 더 어둡다"],
+          correct:"완전히 같다",
+          hint:"두 칸을 연결하는 같은 색 띠를 상상해보세요.",
+          okTx:"같아요. 그림자라는 맥락이 진실을 가린 겁니다.",
+          ngTx:"실제로 완전히 같은 색이에요. 그림자가 뇌를 속인 겁니다.",
+          timeSec:11
+        },
+        post:[
+          {sp:"강준혁", tx:"...같다고요. 보여도 믿기지 않아요."},
+          {sp:"치료사", tx:"맥락이 진실을 가릴 수 있어요. 하지만 진실은 변하지 않아요."},
+          {sp:"강준혁", tx:"감사해요. 조금 안심이 됐어요."},
+          {sp:"치료사", tx:"다음 주에 또 봐요."}
+        ]
+      },
+      {
+        name:"윤지호", age:52, art:"&#128142;",
+        badge:"DAY 3 — 윤지호",
+        pre:[
+          {sp:"기록지", tx:"환자 윤지호, 52세. 기업인. 사람 얼굴의 감정이 반대로 보임."},
+          {sp:"윤지호", tx:"직원들이 웃는 얼굴로 들어오는데 저는 분노한 것처럼 보여요. 회의 때마다 겁이 나요."},
+          {sp:"치료사", tx:"감정 인식 역전. 트라우마 반응의 일종이에요."},
+          {sp:"윤지호", tx:"고칠 수 있나요?"},
+          {sp:"치료사", tx:"시간이 걸려요."}
+        ],
+        puzzle:{
+          id:"face_vase", diff:3,
+          title:"루빈의 꽃병 — 전경과 배경",
+          desc:"같은 이미지에서 꽃병도, 마주 보는 얼굴도 보입니다. 어느 것이 진짜 이미지인가요?",
+          q:"이 이미지에서 무엇이 보이나요?",
+          choices:["꽃병","마주 보는 얼굴","둘 다"],
+          correct:"둘 다",
+          hint:"시선을 흰색에 집중하면 꽃병, 검은색에 집중하면 얼굴이 보여요.",
+          okTx:"둘 다 맞아요. 관점에 따라 진실이 달라 보입니다.",
+          ngTx:"둘 다 맞아요. 하나만 정답인 이미지가 아니에요.",
+          timeSec:11
+        },
+        post:[
+          {sp:"윤지호", tx:"둘 다... 맞군요."},
+          {sp:"치료사", tx:"어느 것을 먼저 보느냐의 문제예요. 틀린 게 없어요."},
+          {sp:"윤지호", tx:"선생님은 어떻게 보여요?"},
+          {sp:"치료사", tx:"저는... (멈춤) ...직업상 객관적으로 봐요."}
+        ]
+      }
+    ]
+  },
+
+  // DAY 4
+  {
+    dayNum:4, title:"넷째 날",
+    note:"기억이 조금 흐릿합니다.\n오늘 첫 번째 환자의 이름을 잊어버렸어요.\n꽃이 완전히 시들어 버렸다.",
+    bg:"linear-gradient(180deg,#05050d,#100a18)",
+    sanityHit:8,
+    patients:[
+      {
+        name:"???", age:0, art:"&#10067;",
+        badge:"DAY 4 — 첫번째 환자",
+        pre:[
+          {sp:"기록지", tx:"환자 ???. — 기록이 지워져 있다."},
+          {sp:"환자", tx:"선생님, 저 또 왔어요."},
+          {sp:"치료사", tx:"...네, 어서 오세요."},
+          {sp:"환자", tx:"(웃으며) 기억 못하시죠? 괜찮아요. 선생님도 매번 그러셨어요."},
+          {sp:"치료사", tx:"(차트를 뒤적인다. 이름이 없다.)"}
+        ],
+        puzzle:{
+          id:"fraser_spiral", diff:4,
+          title:"프레이저 나선 — 원인가 나선인가",
+          desc:"이것은 나선이 아닙니다. 동심원입니다. 하지만 뇌는 나선으로 인식하고, 알아도 바꿀 수 없습니다.",
+          q:"이 도형은 나선인가요, 동심원인가요?",
+          choices:["나선이다","동심원이다","판단할 수 없다"],
+          correct:"동심원이다",
+          hint:"한 선을 손가락으로 끝까지 따라가면 원래 자리로 돌아옵니다.",
+          okTx:"동심원이에요. 알아도 여전히 나선으로 보이죠. 그것이 이 착시의 공포입니다.",
+          ngTx:"동심원이에요. 선을 따라가면 원으로 돌아와요. 알아도 안 바뀝니다.",
+          timeSec:10
+        },
+        post:[
+          {sp:"환자", tx:"선생님, 원이라는 걸 알면서도 나선으로 보이죠?"},
+          {sp:"치료사", tx:"...네."},
+          {sp:"환자", tx:"선생님 삶도 그런 것 같아요. 알면서도 보이지 않는 것들이 있는 것 같아서."},
+          {sp:"치료사", tx:"(불편함. 이 사람은 누구지.)"}
+        ]
+      },
+      {
+        name:"정하람", age:23, art:"&#127926;",
+        badge:"DAY 4 — 정하람",
+        pre:[
+          {sp:"기록지", tx:"환자 정하람, 23세. 음악가. 소리가 색으로 보이는 공감각 증상."},
+          {sp:"정하람", tx:"저는 소리가 색으로 보여요. 그게 착시인가요?"},
+          {sp:"치료사", tx:"공감각이에요. 착시라기보다 감각 교차 현상이지만, 시각 인식에 영향을 줘요."},
+          {sp:"정하람", tx:"그럼 선생님도 뭔가 교차되는 게 있지 않으세요? 보이는 것과 느끼는 것이 뒤섞이는 거."},
+          {sp:"치료사", tx:"(잠시 굳어진다)"}
+        ],
+        puzzle:{
+          id:"scintillating_grid", diff:4,
+          title:"깜박이는 격자 착시",
+          desc:"격자 교차점에 회색 점들이 깜박입니다. 하지만 직접 보려 하면 사라져요. 당신이 보는 것은 실재하지 않습니다.",
+          q:"격자 교차점의 검은 점은 실제로 있나요?",
+          choices:["있다","없다","있다가 사라진다"],
+          correct:"없다",
+          hint:"교차점을 직접 바라보세요. 점이 사라집니다.",
+          okTx:"없어요. 주변시가 만들어낸 환영입니다. 보이는 것이 항상 있는 게 아니에요.",
+          ngTx:"없어요. 직접 보면 사라지는 환영이에요.",
+          timeSec:10
+        },
+        post:[
+          {sp:"정하람", tx:"없다고요? 분명히 보이는데."},
+          {sp:"치료사", tx:"주변시가 만드는 환영이에요. 직접 보면 사라져요."},
+          {sp:"정하람", tx:"선생님, 선생님이 직접 보지 않으려는 것도 있지 않아요?"},
+          {sp:"내레이션", tx:"(나는 대답하지 않았다.)"}
+        ]
+      },
+      {
+        name:"최성호", age:60, art:"&#128084;",
+        badge:"DAY 4 — 최성호",
+        pre:[
+          {sp:"기록지", tx:"환자 최성호, 60세. 은퇴한 판사. 동일한 물체가 각도에 따라 다른 물체로 보임."},
+          {sp:"최성호", tx:"40년간 판사를 했는데, 요즘 같은 증거가 다르게 보여요."},
+          {sp:"치료사", tx:"넥커 큐브 현상일 수 있어요. 다중 해석 가능한 이미지 문제예요."},
+          {sp:"최성호", tx:"그래서 무죄와 유죄가 같은 증거에서 나오는 건가요?"},
+          {sp:"치료사", tx:"...(대답하지 못한다)"}
+        ],
+        puzzle:{
+          id:"necker_cube", diff:4,
+          title:"넥커 큐브 — 두 가지 진실",
+          desc:"이 큐브는 두 가지 방향으로 보입니다. 어느 쪽이 진짜인가요? 둘 다 동등하게 유효합니다.",
+          q:"이 큐브의 앞면은 어느 쪽인가요?",
+          choices:["왼쪽 아래가 앞","오른쪽 위가 앞","판단 불가"],
+          correct:"판단 불가",
+          hint:"두 해석이 모두 맞아요. 3D 공간에서 이 도형은 두 방향 다 가능합니다.",
+          okTx:"둘 다 맞아요. 같은 도형이 두 가지 현실로 보입니다. 어느 쪽이 진짜인지 알 수 없어요.",
+          ngTx:"판단 불가가 정답이에요. 두 해석 모두 동등하게 유효합니다.",
+          timeSec:10
+        },
+        post:[
+          {sp:"최성호", tx:"판단 불가..."},
+          {sp:"치료사", tx:"어느 방향에서 보느냐에 따라 달라지는 거예요."},
+          {sp:"최성호", tx:"그럼 40년간 내가 본 것들도 다른 방향에서 보면 달라질 수 있겠군요."},
+          {sp:"최성호", tx:"선생님... 혹시 본인이 치료사라고 어떻게 확신하세요?"},
+          {advices:[
+            {tx:"제 자격증과 기록이 있어요. 저는 치료사가 맞아요.", end:"deny", resp:"최성호가 고개를 끄덕였다. 나는 서랍을 열고 싶지 않았다."},
+            {tx:"(잠시 말을 잃는다) ...그게 무슨 말씀이세요?", end:"accept", resp:"최성호는 조용히 일어섰다. 복도가 평소보다 길어 보였다."},
+            {tx:"...모르겠어요. 오늘은 그냥 그렇게 느껴지지 않아요.", end:"collapse", resp:"긴 침묵. 최성호가 처음으로 치료사를 측은하게 바라봤다."}
+          ]},
+          {sp:"내레이션", tx:"그 말이 오래 남았다. 4일째가 끝났다."}
+        ]
+      }
+    ]
+  },
+
+  // DAY 5
+  {
+    dayNum:5, title:"다섯째 날",
+    note:"오늘 아침 거울을 보다가\n잠깐 내 얼굴을 알아보지 못했다.\n화분이 바닥에 박살나 있었다.",
+    bg:"linear-gradient(180deg,#05050d,#130a0a)",
+    sanityHit:12,
+    patients:[
+      {
+        name:"임소연", age:38, art:"&#128262;",
+        badge:"DAY 5 — 임소연",
+        pre:[
+          {sp:"기록지", tx:"환자 임소연, 38세. 빛이 다르게 보임. 같은 밝기가 극단적으로 달라 보임."},
+          {sp:"임소연", tx:"남편이 저한테 화낼 때 방이 실제로 더 어두워져요."},
+          {sp:"치료사", tx:"감정 상태가 명암 인식에 영향을 주는 거예요."},
+          {sp:"임소연", tx:"선생님은 지금 이 방이 얼마나 밝아 보이세요?"},
+          {sp:"치료사", tx:"(질문의 의도를 파악하려 한다)"}
+        ],
+        puzzle:{
+          id:"simultaneous_contrast", diff:5,
+          title:"동시 명암 대비 — 헬름홀츠",
+          desc:"같은 회색이 밝은 배경에서는 어둡게, 어두운 배경에서는 밝게 보입니다. 이것이 당신의 기분이 명암을 바꾸는 원리입니다.",
+          q:"두 중앙 사각형의 밝기는?",
+          choices:["왼쪽이 더 밝다","오른쪽이 더 밝다","완전히 같다"],
+          correct:"완전히 같다",
+          hint:"두 사각형 사이의 경계 부분만 가리고 각각 보세요.",
+          okTx:"완전히 같아요. 배경의 명암이 판단을 바꾼 겁니다.",
+          ngTx:"같은 밝기예요. 주변 배경이 인식을 완전히 뒤집은 겁니다.",
+          timeSec:10
+        },
+        post:[
+          {sp:"임소연", tx:"같다고요... 전혀 그렇게 안 보이는데."},
+          {sp:"치료사", tx:"배경이 인식을 지배하는 거예요. 당신 감정도 마찬가지예요."},
+          {sp:"임소연", tx:"선생님은... 배경에 휘둘리지 않으세요?"},
+          {advices:[
+            {tx:"치료사는 훈련을 통해 맥락을 분리하는 법을 배워요. 그게 이 직업의 기술이에요.", end:"deny", resp:"임소연이 부러운 듯 바라봤다. 나는 그 말을 믿고 싶었다."},
+            {tx:"...솔직히, 오늘은 조금 그래요. 방이 좁게 느껴져요.", end:"accept", resp:"임소연이 눈을 크게 떴다. 선생님도요? 나는 말해선 안 됐다."},
+            {tx:"그건 제 얘기가 아니에요. 당신 치료에 집중해요.", end:"collapse", resp:"임소연이 조용히 시선을 내렸다. 나도 그 질문을 피하고 싶었다."}
+          ]},
+          {sp:"내레이션", tx:"(나는 대답하지 못했다. 오늘 따라 이 방이 좁게 느껴진다.)"}
+        ]
+      },
+      {
+        name:"배현석", age:45, art:"&#128302;",
+        badge:"DAY 5 — 배현석",
+        pre:[
+          {sp:"기록지", tx:"환자 배현석, 45세. 불가능한 도형이 실제로 보임."},
+          {sp:"배현석", tx:"선생님, 저는 존재할 수 없는 것들이 실제로 보여요. 꿈인지 현실인지 모르겠어요."},
+          {sp:"치료사", tx:"펜로즈 효과예요. 2D와 3D 인식이 혼선을 일으키는 거예요."},
+          {sp:"배현석", tx:"선생님은 존재할 수 없는 것을 본 적 있어요?"},
+          {sp:"치료사", tx:"(오늘따라 이 질문들이 불편하다)"}
+        ],
+        puzzle:{
+          id:"penrose", diff:5,
+          title:"펜로즈 삼각형 — 불가능한 존재",
+          desc:"이 삼각형은 2D에서는 그릴 수 있지만 3D로는 절대 만들 수 없습니다. 하지만 뇌는 가능하다고 느낍니다.",
+          q:"이 삼각형을 실제 3D 물체로 만들 수 있나요?",
+          choices:["만들 수 있다","만들 수 없다","이미 존재한다"],
+          correct:"만들 수 없다",
+          hint:"각 꼭짓점을 분리해서 보세요. 연결이 불가능합니다.",
+          okTx:"만들 수 없어요. 뇌가 불가능을 가능으로 느끼게 만드는 것이 착시의 핵심입니다.",
+          ngTx:"만들 수 없어요. 2D에서만 존재 가능한 도형입니다.",
+          timeSec:9
+        },
+        post:[
+          {sp:"배현석", tx:"만들 수 없는 것을 뇌가 있다고 느끼게 만드는군요."},
+          {sp:"치료사", tx:"그게 착시의 본질이에요."},
+          {sp:"배현석", tx:"선생님 자신은요? 선생님이 믿는 것들 중에 실제로 없는 게 있지 않을까요?"},
+          {advices:[
+            {tx:"치료사와 환자는 다른 위치에 있어요. 저는 관찰하는 사람이에요.", end:"deny", resp:"배현석이 고개를 기울였다. 나는 그 경계가 흐릿해지는 게 싫었다."},
+            {tx:"(대답하지 않는다. 손을 책상 아래로 내린다.)", end:"accept", resp:"침묵이 대답이 됐다. 배현석은 알아챈 것 같았다."},
+            {tx:"좋은 질문이에요. 치료가 끝나면 생각해볼게요.", end:"collapse", resp:"배현석이 조용히 웃었다. 그 웃음이 오래 남았다."}
+          ]},
+          {sp:"내레이션", tx:"(손이 떨렸다. 나는 차트를 덮었다.)"}
+        ]
+      },
+      {
+        name:"김나현", age:29, art:"&#128048;",
+        badge:"DAY 5 — 김나현",
+        pre:[
+          {sp:"기록지", tx:"환자 김나현, 29세. 스트로보 착시. 움직이는 것이 역방향으로 보임."},
+          {sp:"김나현", tx:"선풍기 날개가 거꾸로 도는 것처럼 보여서 무서워요."},
+          {sp:"치료사", tx:"와건바퀴 효과예요. 프레임 레이트와 회전수가 겹쳐서 역방향으로 인식해요."},
+          {sp:"김나현", tx:"선생님, 가끔 삶이 거꾸로 가는 것처럼 느껴질 때 없어요?"},
+          {sp:"치료사", tx:"(오늘 몇 번째 이런 질문이지)"}
+        ],
+        puzzle:{
+          id:"wagon_wheel", diff:5,
+          title:"와건바퀴 효과 — 역방향 착시",
+          desc:"빠르게 회전하는 바퀴가 특정 속도에서 멈추거나 반대로 도는 것처럼 보입니다.",
+          q:"이 애니메이션의 바퀴는 어느 방향으로 도나요?",
+          choices:["시계 방향","반시계 방향","멈춰 있다","방향을 알 수 없다"],
+          correct:"방향을 알 수 없다",
+          hint:"프레임에 따라 방향이 다르게 보여요. 하나의 정답이 없는 착시입니다.",
+          okTx:"맞아요. 프레임 속도와 회전수에 따라 방향이 달라져요. 정답이 없는 착시입니다.",
+          ngTx:"방향을 특정할 수 없어요. 이 착시는 관찰 시점에 따라 달라집니다.",
+          timeSec:9
+        },
+        post:[
+          {sp:"김나현", tx:"방향을 알 수 없다..."},
+          {sp:"치료사", tx:"맞아요. 이건 정답이 없는 착시예요."},
+          {sp:"김나현", tx:"선생님은 답이 없는 것도 편하게 받아들이세요?"},
+          {sp:"내레이션", tx:"(나는 오늘 세 명 모두에게 같은 질문을 들었다. 우연이 아닌 것 같다.)"}
+        ]
+      }
+    ]
+  },
+
+  // DAY 6
+  {
+    dayNum:6, title:"여섯째 날",
+    note:"어젯밤 꿈에서\n환자들이 모두 내 얼굴을 하고 있었다.\n기분 전환을 위해 방을 정리했다.",
+    bg:"linear-gradient(180deg,#05050d,#180a0a)",
+    sanityHit:18,
+    patients:[
+      {
+        name:"모름", age:0, art:"&#128581;",
+        badge:"DAY 6 — 기록 없음",
+        pre:[
+          {sp:"기록지", tx:"기록 없음. — 내가 직접 쓴 메모: '이 환자는 처음 보는 얼굴이 아닌 것 같다.'"},
+          {sp:"환자", tx:"선생님, 오늘도 기억 못하시죠?"},
+          {sp:"치료사", tx:"죄송해요, 이름을 확인할게요."},
+          {sp:"환자", tx:"이름보다 중요한 게 있어요. 선생님이 어디서 왔는지 기억하세요?"},
+          {advices:[
+            {tx:"저는 이 병원 치료사예요. 당신은 지금 진료실에 있어요.", end:"deny", resp:"환자가 잔잔히 미소 지었다. 그 미소가 불편했다."},
+            {tx:"(기억하려 하지만... 이 방에 처음 들어온 날이 생각나지 않는다.)", end:"collapse", resp:"두통이 왔다. 나는 언제부터 여기 있었지?"},
+            {tx:"그 질문은 치료와 관계없어요. 시작하죠.", end:"accept", resp:"환자는 말없이 나를 바라봤다. 시선이 오래 남았다."}
+          ]},
+          {sp:"치료사", tx:"(뭔가 이상하다. 이 방에 몇 번이나 온 사람처럼 말한다.)"}
+        ],
+        puzzle:{
+          id:"hybrid_image", diff:6,
+          title:"하이브리드 이미지 — 거리에 따른 현실",
+          desc:"가까이서 보면 A로 보이고, 멀리서 보면 B로 보입니다. 어느 것이 진짜인가요? 둘 다입니다. 동시에.",
+          q:"이 이미지에서 무엇이 보이나요? (화면을 멀리 해보세요)",
+          choices:["화난 얼굴","웃는 얼굴","둘 다"],
+          correct:"둘 다",
+          hint:"화면에서 눈을 멀리 하거나 눈을 가늘게 뜨면 다른 이미지가 보여요.",
+          okTx:"둘 다 맞아요. 거리에 따라 현실이 달라집니다. 어느 것도 거짓이 아니에요.",
+          ngTx:"둘 다 맞아요. 이 착시는 관찰 거리에 따라 완전히 다른 이미지가 보입니다.",
+          timeSec:9
+        },
+        post:[
+          {sp:"환자", tx:"선생님, 저를 가까이서 보면 어떻게 보여요?"},
+          {sp:"치료사", tx:"...환자로 보여요."},
+          {sp:"환자", tx:"멀리서 보면요?"},
+          {sp:"치료사", tx:"(대답할 수 없다. 뭔가 섬뜩하다)"},
+          {sp:"내레이션", tx:"그가 나갈 때 그의 뒷모습이 낯익었다. 거울 속 내 모습 같았다."}
+        ]
+      },
+      {
+        name:"진서율", age:33, art:"&#128302;",
+        badge:"DAY 6 — 진서율",
+        pre:[
+          {sp:"기록지", tx:"환자 진서율, 33세. 공간 왜곡. 같은 방이 매번 다른 크기로 보임."},
+          {sp:"진서율", tx:"선생님, 이 진료실이 처음 왔을 때보다 작아졌어요."},
+          {sp:"치료사", tx:"(나도 오늘 같은 느낌이 들었다) ...에임스의 방 효과일 수 있어요."},
+          {sp:"진서율", tx:"선생님도 느꼈군요."},
+          {sp:"치료사", tx:"(말실수다)"}
+        ],
+        puzzle:{
+          id:"ames_room", diff:6,
+          title:"에임스의 방 — 공간의 거짓말",
+          desc:"실제로 왜곡된 방에서는 같은 크기의 사람이 한쪽에서는 거인으로, 다른 쪽에서는 난쟁이로 보입니다.",
+          q:"왼쪽과 오른쪽 인물의 실제 크기는?",
+          choices:["왼쪽이 더 크다","오른쪽이 더 크다","같다"],
+          correct:"같다",
+          hint:"방의 형태가 왜곡되어 있어요. 인물은 같은 크기지만 방이 다르게 인식시킵니다.",
+          okTx:"같아요. 방의 구조가 크기 인식을 완전히 바꾼 겁니다. 환경이 모든 것을 왜곡해요.",
+          ngTx:"같은 크기예요. 방의 왜곡된 구조가 크기 판단을 뒤흔든 겁니다.",
+          timeSec:9
+        },
+        post:[
+          {sp:"진서율", tx:"같다고요. 그럼 제가 매번 다르게 보이는 이 방도 실제로는 같은 건가요?"},
+          {sp:"치료사", tx:"같아요."},
+          {sp:"진서율", tx:"선생님이 계시는 이 방도요?"},
+          {advices:[
+            {tx:"같아요. 우리가 인식하는 방식이 다를 뿐이에요.", end:"deny", resp:"진서율이 고개를 끄덕였다. 나도 그 말을 믿고 싶었다."},
+            {tx:"(대답을 멈추고 방 안을 둘러본다. 벽이... 가까워졌나?)", end:"accept", resp:"진서율이 조용히 말했다. 선생님도 그렇게 느끼시죠? 나는 부정하지 못했다."},
+            {tx:"오늘 세션은 여기서 마무리해요.", end:"collapse", resp:"진서율이 일어섰다. 나는 혼자 방에 남았다. 방이 작았다."}
+          ]},
+          {sp:"내레이션", tx:"나는 대답하지 못했다. 이 방이... 언제부터 이렇게 생겼지?"}
+        ]
+      },
+      {
+        name:"모름2", age:0, art:"&#128064;",
+        badge:"DAY 6 — 세 번째 환자",
+        pre:[
+          {sp:"기록지", tx:"— 기록 없음. 이 환자를 본 기억이 없다. 하지만 의자에 앉아 있다."},
+          {sp:"환자", tx:"오래 기다렸어요."},
+          {sp:"치료사", tx:"...예약이 없었는데요."},
+          {sp:"환자", tx:"선생님이 예약했어요. 선생님 자신을 위해서."},
+          {sp:"치료사", tx:"무슨 말이에요."},
+          {sp:"환자", tx:"내일 오는 환자가 마지막이에요. 선생님이 준비가 됐으면 좋겠어요."}
+        ],
+        puzzle:{
+          id:"inverted_face", diff:6,
+          title:"뒤집힌 얼굴 착시 — 대칭의 붕괴",
+          desc:"얼굴을 거꾸로 뒤집으면 이상함을 잘 못 느낍니다. 뇌가 얼굴을 '위에서 아래로'만 처리하기 때문입니다.",
+          q:"이 뒤집힌 얼굴에서 표정이 이상해 보이나요?",
+          choices:["이상해 보인다","정상으로 보인다","모르겠다"],
+          correct:"정상으로 보인다",
+          hint:"이미지를 다시 뒤집어 보세요. 완전히 다른 표정이 나타날 겁니다.",
+          okTx:"뒤집혀 있을 때는 이상함을 못 느껴요. 정상적으로 보이죠. 하지만 바로 세우면 충격적인 표정이 나타납니다.",
+          ngTx:"뒤집힌 상태에서는 정상으로 보입니다. 바로 세우면 이상한 표정이 보여요.",
+          timeSec:8
+        },
+        post:[
+          {sp:"환자", tx:"선생님, 지금 선생님 자신의 얼굴을 거꾸로 보고 있다면 어떻게 보일까요?"},
+          {sp:"치료사", tx:"...그게 무슨—"},
+          {sp:"환자", tx:"내일 오는 환자가 선생님을 똑바로 세울 거예요."},
+          {sp:"내레이션", tx:"그가 나간 후 진료실에는 아무 기록도 남아 있지 않았다."}
+        ]
+      }
+    ]
+  },
+
+  // DAY 7 — FINAL
+  {
+    dayNum:7, title:"일곱째 날",
+    note:"마지막 날입니다.\n오늘 예약은 단 한 명.\n이름: 김하은.\n방은 여전히 조용하다.",
+    bg:"linear-gradient(180deg,#1a0505,#08000f)",
+    sanityHit:22,
+    patients:[
+      {
+        name:"김하은", age:0, art:"&#128373;",
+        badge:"마지막 환자 — 김하은",
+        pre:[
+          {sp:"기록지", tx:"환자: 김하은. — 이 파일은 내가 작성하지 않았다."},
+          {sp:"김하은", tx:"안녕하세요, 선생님."},
+          {sp:"치료사", tx:"...처음 오셨나요?"},
+          {sp:"김하은", tx:"아니요. 선생님이 모를 뿐이에요."},
+          {sp:"치료사", tx:"기록이 없는데요."},
+          {sp:"김하은", tx:"선생님이 지우셨어요. 선생님이 저의 치료사였을 때."},
+          {sp:"치료사", tx:"저는 치료를 받은 적이 없어요."},
+          {sp:"김하은", tx:"최민서 씨, 한준혁 씨, 이수진 씨, 강준혁 씨, 오현우 씨..."},
+          {sp:"김하은", tx:"그 분들 기억하세요?"},
+          {sp:"치료사", tx:"물론이요. 내가 치료한 환자들이에요."},
+          {sp:"김하은", tx:"아니면, 선생님 안에 있는 조각들이었을까요?"},
+          {sp:"치료사", tx:"(심장이 빠르게 뛴다. 아니야. 나는 치료사야.)"},
+          {sp:"김하은", tx:"색이 다르게 보이고, 크기가 왜곡되고, 정지한 게 움직이는 것처럼 보이고."},
+          {sp:"김하은", tx:"선생님이 3년 전에 저한테 말씀하셨던 증상이에요."},
+          {sp:"치료사", tx:"그건 환자들한테 설명하는—"},
+          {sp:"김하은", tx:"선생님, 이 방에 창문이 없다는 거 알고 계세요?"},
+          {sp:"내레이션", tx:"(나는 처음으로 고개를 들었다. 창문이... 없었다. 언제부터?)"}
+        ],
+        puzzle:{
+          id:"haeun_mirror", diff:7,
+          title:"거울 속의 얼굴 — 나는 누구인가",
+          desc:"아래 두 얼굴 중 하나는 치료사의 얼굴이고 하나는 환자의 얼굴입니다. 어느 쪽이 '당신'인가요?",
+          q:"왼쪽과 오른쪽 중 어느 얼굴이 치료사입니까?",
+          choices:["왼쪽이 치료사다","오른쪽이 치료사다","둘 다 치료사다","둘 다 환자다"],
+          correct:"둘 다 환자다",
+          hint:"두 얼굴을 오래 보면 경계가 흐릿해집니다. 뇌가 '맥락'을 만들어내는 것을 느껴보세요.",
+          okTx:"맞아요. 경계가 없어요. 치료사도 환자도 같은 얼굴이에요. 당신도 느꼈겠죠.",
+          ngTx:"이 두 얼굴은 동일한 얼굴을 다른 맥락에서 본 것이에요. 뇌가 역할을 만들어낸 거예요.",
+          timeSec:6
+        },
+        post:[
+          {sp:"김하은", tx:"선생님, 7일 동안 본 환자들이 실제로 있었나요?"},
+          {sp:"치료사", tx:"(당연히...) ...있었어요."},
+          {sp:"김하은", tx:"진료 기록을 보여주실 수 있어요?"},
+          {sp:"치료사", tx:"(서랍을 열었다. 비어 있다.)"},
+          {sp:"내레이션", tx:"비어 있다. 7일 동안의 기록이 한 장도 없다."},
+          {sp:"김하은", tx:"선생님, 저 3년 전부터 선생님의 치료사예요. 오늘이 열두 번째 세션이에요.", collapse:true},
+          {sp:"치료사", tx:"(모든 것이 뒤집히는 느낌)"},
+          {sp:"김하은", tx:"선생님, 지금 이 순간... 선생님은 어디 있나요?"},
+          {sp:"치료사", tx:"(대답할 수 없다. 무언가 결정적인 것이 무너진다.)"},
+          {sp:"내레이션", tx:"─ 여기서 모든 것이 끝난다."}
+        ]
+      }
+    ]
+  }
 ];
 
-// ================================================================
-//  ENDINGS
-// ================================================================
-const ENDINGS = {
+// ── ENDINGS 데이터 ──
+var ENDINGS={
   deny:{
-    tag:'ENDING A — 부정',
-    art:'🏥',
-    title:'나는 치료사다',
-    body:`당신은 끝까지 자신의 정체성을 지켰습니다.\n\n진료실 문을 열고 나가자, 동료 의사들이 당신을 바라봤습니다.\n\n"선생님, 오늘도 혼자 진료실에 계셨어요. 환자는 아무도 없었는데요."\n\n당신은 미소를 지었습니다.\n\n─ 하지만 그 미소가 어느 쪽인지, 이제 당신도 알 수 없었습니다.`,
-    color:'#7c6fe0'
+    tag:"ENDING A — 부정",art:"&#127973;",title:"나는 치료사다",
+    body:"당신은 끝까지 자신의 정체성을 지켰습니다.\n\n진료실 문을 열고 나가자, 동료들이 당신을 바라봤습니다.\n\n'선생님, 오늘도 혼자 진료실에 계셨어요. 7일째요.'\n\n환자 기록은 한 장도 없었습니다.\n\n당신은 미소를 지었습니다.\n\n─ 그 미소가 치료사의 것인지, 환자의 것인지\n이제 당신도 알 수 없었습니다.",
+    color:"#8b7cf8"
   },
   accept:{
-    tag:'ENDING B — 수용',
-    art:'🌱',
-    title:'나는 환자였다',
-    body:`모든 것이 떠올랐습니다.\n\n3년 전. 당신도 이 의자에 앉아 있었습니다. 색이 다르게 보이고, 크기가 왜곡되고, 세상이 빙글빙글 돌던 날들.\n\n그 치료사의 이름은 — 김하은이었습니다.\n\n"선생님, 이제 기억나세요?"\n\n당신은 처음으로 울었습니다. 치료사가 아닌, 한 사람으로서.\n\n그것이 진짜 치유의 시작이었습니다.`,
-    color:'#34d399'
+    tag:"ENDING B — 각성",art:"&#127807;",title:"나는 환자였다",
+    body:"모든 것이 한꺼번에 떠올랐습니다.\n\n3년 전. 당신은 이 의자에 앉아 있었습니다.\n색이 다르게 보이고, 크기가 왜곡되고,\n세상이 빙글빙글 돌던 그 날들.\n\n7일 동안의 환자들은 당신 자신의 조각들이었습니다.\n최민서의 혼란, 박도현의 강박, 이수진의 공포...\n\n당신의 치료사 이름은 김하은이었습니다.\n\n'선생님, 이제 기억나세요?'\n\n당신은 처음으로 울었습니다.\n그것이 진짜 치유의 시작이었습니다.",
+    color:"#34d399"
   },
   collapse:{
-    tag:'ENDING C — 붕괴',
-    art:'🕳️',
-    title:'경계가 사라진 곳',
-    body:`당신은 대답하지 않았습니다.\n\n진료실은 점점 어두워졌습니다.\n\n최민서도, 박도현도, 이수진도, 강준혁도, 김하은도 — 모두 같은 얼굴로 당신을 바라봤습니다.\n\n그 얼굴은 당신의 얼굴이었습니다.\n\n착시는 끝나지 않았습니다.\n\n─ 어쩌면 착시가 아니었는지도.`,
-    color:'#f87171'
+    tag:"ENDING C — 붕괴",art:"&#128371;",title:"경계가 사라진 곳",
+    body:"당신은 대답하지 않았습니다.\n\n진료실이 점점 어두워졌습니다.\n\n7일 동안 만난 모든 환자들이\n하나씩 당신의 얼굴로 바뀌어갔습니다.\n\n마지막으로 김하은도 당신의 얼굴이 되었습니다.\n\n착시는 끝나지 않았습니다.\n어쩌면 이 게임 전체가\n당신 뇌가 만들어낸 마지막 착시였는지도.",
+    color:"#f87171"
   }
 };
 
+// ── 귀가 내레이션 (날 사이) ──
+var REST_SCENES=[
+  null, // Day 1 끝 → Day 2 시작 전
+  {
+    time:"오후 9:22",icon:"&#127968;",title:"귀가",
+    body:"현관문을 열자 조용한 집이 맞이했다.\n\n오늘 최민서가 처음으로 웃었다. 그 웃음이 자꾸 떠오른다.\n\n오늘도 고된 하루였다. 내일도 힘내야지.",
+    btnTx:"잠들기",
+    next:"day"
+  },
+  {
+    time:"오후 10:05",icon:"&#127968;",title:"귀가",
+    body:"샤워를 하고 소파에 누웠다.\n\n이수진의 눈빛이 생각난다. '치료사도 의심해요?'\n\n그 질문에 제대로 대답하지 못했다. 왜 그랬을까.\n\n피곤하다. 눈이 무겁다.",
+    btnTx:"잠들기",
+    next:"day"
+  },
+  {
+    time:"오후 11:14",icon:"&#127968;",title:"귀가",
+    body:"냉장고를 열었다가 그냥 닫았다.\n\n오현우가 했던 말. '선생님도 착시가 보이나요?'\n\n오래 이 일을 하다 보면 어떻게 되는 걸까.\n\n오늘도 고된 하루였다. 내일도 힘내야지.",
+    btnTx:"잠들기",
+    next:"day"
+  },
+  {
+    time:"자정 0:38",icon:"&#127968;",title:"귀가",
+    body:"불을 켜지 않고 현관에 한참 서 있었다.\n\n최성호가 물었다. '선생님이 치료사라고 어떻게 확신해요?'\n\n웃어넘겼지만, 집에 오는 길 내내 그 질문이 따라왔다.\n\n...내일도 힘내야지.",
+    btnTx:"잠들기",
+    next:"day"
+  },
+  {
+    time:"오전 1:55",icon:"&#127968;",title:"귀가",
+    body:"거울 앞에 섰다.\n\n오늘따라 내 얼굴이 낯설었다.\n\n임소연이 말했다. '선생님은 배경에 휘둘리지 않으세요?'\n\n방이 좁다. 오늘따라 유난히 좁다.\n\n내일도... 힘내야지.",
+    btnTx:"잠들기",
+    next:"day"
+  },
+  {
+    time:"새벽 3:10",icon:"&#127968;",title:"귀가",
+    body:"집에 왔다.\n\n배현석이 말했다. '선생님이 믿는 것들 중에 실제로 없는 게 있지 않을까요?'\n\n손을 봤다. 손이 떨렸다.\n\n내일이 마지막 날이다.",
+    btnTx:"마지막 날 맞이하기",
+    next:"day"
+  }
+];
+
+// ── 프롤로그 대사 ──
+var PROLOGUE_LINES=[
+  {sp:"나", tx:"나는 심리치료사다."},
+  {sp:"나", tx:"내가 일하는 곳은 도심 외곽의 작은 상담 센터.\n\n창문도 없는 방. 책상 하나, 의자 두 개."},
+  {sp:"나", tx:"매일 이 방에 앉아 사람들의 이야기를 듣는다.\n\n그들이 보는 것, 느끼는 것, 믿는 것."},
+  {sp:"나", tx:"착시 인식 장애.\n\n뇌가 현실을 잘못 읽는 증상이다.\n\n나는 7년째 이 분야를 연구하고 있다."},
+  {sp:"나", tx:"오늘은 월요일이다.\n\n새로운 한 주가 시작됐다.\n\n책상 위 화분에 꽃이 피었다."},
+  {sp:"나", tx:"오늘도 고된 하루가 될 것이다.\n\n그래도 괜찮다.\n\n이 일이 나는 좋다."},
+  {sp:"내레이션", tx:"― 7일 후, 모든 것이 달라진다."}
+];
+
+// ── 회차 기억 시스템 ──
+function applyPrevEndingEffects(){
+  if(!prevEnding)return;
+  var badge=document.getElementById('t-prev-badge');
+  if(prevEnding==='deny'){
+    badge.textContent='▶ 이전 회차: ENDING A — 부정';badge.style.display='block';
+    document.querySelector('.t-eye').style.filter='hue-rotate(180deg) brightness(1.3)';
+  } else if(prevEnding==='accept'){
+    badge.textContent='▶ 이전 회차: ENDING B — 각성';badge.style.display='block';
+    badge.style.borderColor='rgba(52,211,153,.4)';badge.style.color='#34d399';
+    document.querySelector('.t-eye').style.filter='hue-rotate(120deg) saturate(1.4)';
+  } else if(prevEnding==='collapse'){
+    badge.textContent='▶ 이전 회차: ENDING C — 붕괴';badge.style.display='block';
+    badge.style.borderColor='rgba(248,113,113,.4)';badge.style.color='#f87171';
+    document.querySelector('.t-eye').style.filter='hue-rotate(300deg) contrast(1.4)';
+  }
+}
+
+// ── 타이틀 메뉴 ──
+function continueGame(){
+  if(!saveData.hasProgress||!saveData.snap)return;
+  var s=saveData.snap;
+  sanity=s.sanity;dayIdx=s.dayIdx;patientIdx=s.patientIdx;
+  endScore=s.endScore;wrongTotal=s.wrongTotal;bgBreak=s.bgBreak;
+  window._adviceLog=[];
+  setSanity(sanity);
+  drawBg(dayIdx,bgBreak);
+  showDayScreen();
+}
+
+function startNewGame(){
+  sanity=100;dayIdx=0;patientIdx=0;dIdx=0;dMode='pre';
+  wrongTotal=0;choiceMade=null;puzzleDone=false;bgBreak=false;endScore=0;
+  window._adviceLog=[];window._wwFrame=null;window._imFrame=null;
+  clearProgress();
+  // 검은 화면에서 페이드인 후 프롤로그
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;transition:opacity 1.2s ease;';
+  document.body.appendChild(overlay);
+  setTimeout(function(){
+    overlay.style.opacity='0';
+    setTimeout(function(){document.body.removeChild(overlay);},1300);
+  },50);
+  drawBg(0,false);
+  showPrologue();
+}
+
+function showGallery(){
+  var wrap=document.getElementById('gal-cards');
+  wrap.innerHTML='';
+  var endingList=[
+    {key:'deny',    icon:'&#127973;',tag:'ENDING A',name:'나는 치료사다',    desc:'현실을 끝까지 지켰을 때'},
+    {key:'accept',  icon:'&#127807;',tag:'ENDING B',name:'나는 환자였다',    desc:'진실을 받아들였을 때'},
+    {key:'collapse',icon:'&#128371;',tag:'ENDING C',name:'경계가 사라진 곳', desc:'모든 것이 무너졌을 때'}
+  ];
+  endingList.forEach(function(e){
+    var unlocked=saveData.unlockedEndings.indexOf(e.key)!==-1;
+    var card=document.createElement('div');
+    card.className='gal-card '+(unlocked?'unlocked':'locked');
+    if(unlocked){
+      card.innerHTML='<div class="gal-icon">'+e.icon+'</div><div class="gal-info"><div class="gal-tag">'+e.tag+'</div><div class="gal-name">'+e.name+'</div><div class="gal-desc">'+e.desc+'</div></div>';
+      card.onclick=function(){showEnding(e.key,true);};
+    } else {
+      card.innerHTML='<div class="gal-icon" style="opacity:.3">&#128274;</div><div class="gal-info"><div class="gal-tag">'+e.tag+'</div><div class="gal-name" style="color:var(--dim)">???</div><div class="gal-lock">게임을 클리어하면 해금됩니다</div></div>';
+    }
+    wrap.appendChild(card);
+  });
+  show('s-gallery');
+}
+
+// ── 프롤로그 ──
+var proIdx=0;
+function showPrologue(){
+  proIdx=0;
+  drawBg(0,false);
+  show('s-prologue');
+  renderPrologue();
+}
+function renderPrologue(){
+  if(proIdx>=PROLOGUE_LINES.length){
+    showDayScreen();return;
+  }
+  var line=PROLOGUE_LINES[proIdx];
+  document.getElementById('pro-speaker').textContent=line.sp;
+  var el=document.getElementById('pro-text-in');
+  el.textContent='';
+  var cur=document.getElementById('pro-cursor');
+  var txt=line.tx.replace(/\n/g,'\n');
+  var i=0;
+  clearInterval(window._proType);
+  var spd = TEXT_SPEED_MAP[saveData.textSpeed||'normal']||30;
+  window._proType=setInterval(function(){
+    if(i<txt.length){el.textContent+=txt[i];i++;}
+    else{clearInterval(window._proType);cur.style.display='inline-block';}
+  },spd);
+}
+function nextPrologue(){
+  if(window._proType){
+    clearInterval(window._proType);
+    var line=PROLOGUE_LINES[proIdx];
+    document.getElementById('pro-text-in').textContent=line.tx.replace(/\n/g,'\n');
+    window._proType=null;return;
+  }
+  proIdx++;renderPrologue();
+}
+
+// ── 귀가/휴식 화면 ──
+var _restNextFn=null;
+function showRestScreen(restIdx,cb){
+  var scene=REST_SCENES[restIdx];
+  if(!scene){cb();return;}
+  document.getElementById('rest-time').textContent=scene.time;
+  document.getElementById('rest-icon').innerHTML=scene.icon;
+  document.getElementById('rest-title').textContent=scene.title;
+  document.getElementById('rest-body').innerHTML=scene.body.replace(/\n/g,'<br>');
+  document.getElementById('rest-btn').textContent=scene.btnTx;
+  var rsb=document.getElementById('rest-sbar');
+  rsb.style.width=sanity+'%';
+  rsb.style.background=sanity>60?'#8b7cf8':sanity>30?'#fbbf24':'#f87171';
+  _restNextFn=cb;
+  drawBg(restIdx+1,false);
+  show('s-rest');
+}
+function restNext(){
+  if(_restNextFn){var fn=_restNextFn;_restNextFn=null;fn();}
+}
+
+
+// ── 화면 전환 ──
+function dayTransition(cb){
+  var el=document.getElementById('day-trans');
+  el.style.display='block';
+  el.style.transition='opacity .35s';
+  el.style.opacity='1';
+  setTimeout(function(){
+    cb();
+    setTimeout(function(){
+      el.style.opacity='0';
+      setTimeout(function(){el.style.display='none';},380);
+    },80);
+  },380);
+}
+
 // ================================================================
-//  SCREEN SWITCH
+// SCREEN
 // ================================================================
+
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  var hud=document.getElementById('d-hud');
+  if(hud)hud.style.display=(id==='s-dialog')?'flex':'none';
+  var pn=document.getElementById('patient-note');
+  if(pn)pn.style.display=(id==='s-dialog')?'block':'none';
+  var noBg=['s-title','s-settings','s-gallery'];
+  var dbg=document.getElementById('d-bg');
+  var dvig=document.getElementById('d-vig');
+  if(dbg)dbg.style.display=noBg.indexOf(id)>=0?'none':'block';
+  if(dvig)dvig.style.opacity=noBg.indexOf(id)>=0?'0':'1';
 }
-function showTitleScreen(){ show('s-title'); }
+function goTitle(){
+  clearProgress();
+  show('s-title');
+}
 
-// ================================================================
-//  DIALOG ENGINE
-// ================================================================
-function typeText(txt){
-  fullText=txt; charPos=0; typing=true;
-  document.getElementById('d-text-in').textContent='';
+// ── 산정력 ──
+function setSanity(v){
+  sanity=Math.max(0,Math.min(100,v));
+  ['san-bar','day-sbar','rest-sbar'].forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    el.style.width=sanity+'%';
+    el.style.background=sanity>60?'#8b7cf8':sanity>30?'#fbbf24':'#f87171';
+  });
+  if(sanity<35)showCrack();
+}
+function loseSanity(n){setSanity(sanity-n);}
+function gainSanity(n){setSanity(Math.min(100,sanity+n));}
+
+function showCrack(){
+  var ov=document.getElementById('crack-ov');
+  var cv2=document.getElementById('crack-cv');
+  cv2.width=window.innerWidth;cv2.height=window.innerHeight;
+  var c=cv2.getContext('2d');c.clearRect(0,0,cv2.width,cv2.height);
+  var n=4+Math.floor((100-sanity)/10);
+  for(var i=0;i<n;i++){
+    c.strokeStyle='rgba(224,124,160,'+(0.1+Math.random()*0.2)+')';
+    c.lineWidth=0.5+Math.random()*1.5;c.beginPath();
+    var x=Math.random()*cv2.width,y=Math.random()*cv2.height;
+    c.moveTo(x,y);
+    for(var j=0;j<8;j++){x+=(-80+Math.random()*160);y+=(-80+Math.random()*160);c.lineTo(x,y);}
+    c.stroke();
+  }
+  ov.classList.add('on');
+  clearTimeout(crackTmr);
+  crackTmr=setTimeout(function(){ov.classList.remove('on');},500);
+}
+
+function whiteFlash(){
+  var el=document.getElementById('flash');
+  el.style.opacity='.6';
+  setTimeout(function(){el.style.opacity='0';},200);
+}
+
+// 7일차 김하은 collapse 시 극적인 배경 전환
+function flashScreen(){
+  // 1) 빨간 번쩍
+  var cov=document.getElementById('collapse-ov');
+  cov.classList.remove('on');
+  void cov.offsetWidth; // reflow
+  cov.classList.add('on');
+
+  // 2) 글리치 라인 여러 개
+  spawnGlitchLines();
+
+  // 3) 화면 흔들림
+  document.body.style.transition='transform .05s';
+  var shakes=[[4,0],[-4,2],[3,-2],[-2,1],[0,0]];
+  var si=0;
+  var shakeInt=setInterval(function(){
+    if(si>=shakes.length){clearInterval(shakeInt);document.body.style.transform='';return;}
+    document.body.style.transform='translate('+shakes[si][0]+'px,'+shakes[si][1]+'px)';
+    si++;
+  },55);
+
+  // 4) 배경 이미지 교체 + 페이드
+  setTimeout(function(){
+    var img=document.getElementById('bg-img');
+    img.style.transition='opacity .3s, filter .5s';
+    img.style.filter='invert(1) hue-rotate(180deg) contrast(2)';
+    setTimeout(function(){
+      img.src=BG_FRAMES[5]; // 붕괴 프레임
+      img.style.filter='saturate(0.3) brightness(0.6)';
+      img.style.transition='filter 1.2s';
+    },300);
+  },200);
+
+  // 5) 2초 후 글리치 사운드 효과 (AudioContext)
+  try{
+    var ac=new AudioContext();
+    var buf=ac.createBuffer(1,ac.sampleRate*0.15,ac.sampleRate);
+    var d=buf.getChannelData(0);
+    for(var k=0;k<d.length;k++)d[k]=(Math.random()*2-1)*(1-k/d.length);
+    var src2=ac.createBufferSource();src2.buffer=buf;
+    var g=ac.createGain();g.gain.value=0.08;
+    src2.connect(g);g.connect(ac.destination);src2.start();
+  }catch(e){}
+}
+
+function spawnGlitchLines(){
+  var n=8+Math.floor(Math.random()*6);
+  for(var i=0;i<n;i++){
+    (function(delay){
+      setTimeout(function(){
+        var line=document.createElement('div');
+        line.className='glitch-line';
+        line.style.top=Math.random()*100+'vh';
+        var hue=Math.random()>0.5?'rgba(255,50,80,':'rgba(80,200,255,';
+        line.style.background=hue+'0.7)';
+        line.style.boxShadow='0 0 8px '+hue+'0.5)';
+        document.body.appendChild(line);
+        setTimeout(function(){if(line.parentNode)line.parentNode.removeChild(line);},350);
+      },delay);
+    })(i*30+Math.random()*60);
+  }
+}
+
+// 일 전환 시 검은 페이드인/아웃 효과
+
+function whiteFlash(){
+  var el=document.getElementById('flash');
+  el.style.opacity='.6';
+  setTimeout(function(){el.style.opacity='0';},200);
+}
+
+
+// ── DAY 화면 ──
+function showDayScreen(){
+  var pn=document.getElementById('patient-note');if(pn)pn.classList.add('hidden');
+  var day=DAYS[dayIdx];
+  function _doShow(){
+    document.getElementById('day-num').textContent='DAY '+day.dayNum;
+    document.getElementById('day-title').textContent=day.title;
+    document.getElementById('day-note').innerHTML=day.note.replace(/\n/g,'<br>');
+    if(day.sanityHit)loseSanity(day.sanityHit);
+    drawBg(dayIdx,bgBreak);
+    var dsb=document.getElementById('day-sbar');
+    dsb.style.width=sanity+'%';
+    dsb.style.background=sanity>60?'#8b7cf8':sanity>30?'#fbbf24':'#f87171';
+    if(day.dayNum===7){
+      spawnGlitchLines();
+      setTimeout(function(){spawnGlitchLines();},200);
+      var el=document.getElementById('day-num');
+      el.style.animation='glitch .08s steps(1) 5';
+      setTimeout(function(){el.style.animation='';},500);
+    }
+    show('s-day');
+    saveProgress();
+  }
+  if(dayIdx>0){dayTransition(_doShow);}else{_doShow();}
+}
+
+// ── 환자 대화 ──
+function typeText(el,txt,cb){
+  typing=true;fullTxt=txt;charPos=0;
+  el.textContent='';
   clearInterval(typeInt);
-  typeInt=setInterval(()=>{
-    document.getElementById('d-text-in').textContent=fullText.slice(0,++charPos);
-    if(charPos>=fullText.length){clearInterval(typeInt);typing=false;}
-  },24);
-}
-
-function nextDialog(){
-  if(typing){clearInterval(typeInt);document.getElementById('d-text-in').textContent=fullText;typing=false;return;}
-  dIdx++;
-  renderDialog();
+  var spd = TEXT_SPEED_MAP[saveData.textSpeed||'normal']||30;
+  typeInt=setInterval(function(){
+    if(charPos<txt.length){el.textContent+=txt[charPos];charPos++;}
+    else{clearInterval(typeInt);typing=false;if(cb)cb();}
+  },spd);
 }
 
 function renderDialog(){
-  const ch=STORY[chIdx];
-  const lines=dMode==='pre'?ch.pre:ch.post;
+  var day=DAYS[dayIdx];
+  var pat=day.patients[patientIdx];
+  var lines=dMode==='pre'?pat.pre:pat.post;
   if(dIdx>=lines.length){
-    if(dMode==='pre'){
-      startPuzzle();
-    } else {
-      // advance
-      chIdx++;
-      if(chIdx>=STORY.length){
-        // should not reach here normally
-        return;
-      }
-      const next=STORY[chIdx];
-      beginChapter();
+    if(dMode==='pre'){startPuzzle();}
+    else{
+      var isLast=(dayIdx===DAYS.length-1&&patientIdx===day.patients.length-1);
+      if(isLast){calcEnding();return;}
+      nextPatient();
     }
     return;
   }
-  const line=lines[dIdx];
-  document.getElementById('d-speaker').textContent=line.sp;
-  typeText(line.tx);
-  // Apply glitch at low sanity
-  if(sanity<40){
-    document.getElementById('d-text-in').classList.add('glitch');
-  } else {
-    document.getElementById('d-text-in').classList.remove('glitch');
+  var line=lines[dIdx];
+  var choicesEl=document.getElementById('d-choices');
+  var nextBtn=document.getElementById('d-next');
+  if(line.advices){
+    choicesEl.style.display='block';choicesEl.innerHTML='';
+    var lbl=document.createElement('div');lbl.className='adv-label';lbl.textContent='어떤 조언을 할까요?';
+    choicesEl.appendChild(lbl);
+    line.advices.forEach(function(adv,i){
+      var btn=document.createElement('button');btn.className='adv-btn';
+      btn.innerHTML=(i===0?'[A] ':(i===1?'[B] ':'[C] '))+adv.tx;
+      btn.onclick=function(){selectAdvice(adv,line.advices);};
+      choicesEl.appendChild(btn);
+    });
+    document.getElementById('d-speaker').textContent='치료사';
+    document.getElementById('d-text-inner').textContent='...';
+    nextBtn.style.display='none';return;
+  }
+  choicesEl.style.display='none';nextBtn.style.display='block';
+  var sp=line.sp||'';
+  document.getElementById('d-speaker').textContent=sp;
+  var spColor={'치료사':'#8b7cf8','내레이션':'#6a6890','기록지':'#fbbf24','김하은':'#f87171'};
+  document.getElementById('d-speaker').style.color=spColor[sp]||'#8b7cf8';
+  var txtEl=document.getElementById('d-text-inner');
+  var curEl=document.getElementById('d-cursor');
+  nextBtn.style.display='none';
+  typeText(txtEl,line.tx,function(){
+    nextBtn.style.display='block';
+    if(sp==='내레이션'||sp==='기록지'){
+      document.getElementById('d-text-in').style.fontStyle='italic';
+    } else {
+      document.getElementById('d-text-in').style.fontStyle='normal';
+    }
+  });
+  if(line.collapse&&!bgBreak){
+    bgBreak=true;
+    setTimeout(function(){drawBg(dayIdx,true);flashScreen();},400);
   }
 }
 
-function beginChapter(){
-  const ch=STORY[chIdx];
-  dIdx=0; dMode='pre';
-  document.getElementById('d-badge').textContent=ch.badge;
-  document.getElementById('d-bg').style.background=ch.bg;
-  document.getElementById('scene-art').textContent=ch.art;
-  if(ch.sanityHit) loseSanity(ch.sanityHit);
+function selectAdvice(adv,allAdvices){
+  var choicesEl=document.getElementById('d-choices');
+  var nextBtn=document.getElementById('d-next');
+  var btns=choicesEl.querySelectorAll('.adv-btn');
+  btns.forEach(function(btn,i){
+    btn.disabled=true;
+    btn.className='adv-btn '+(allAdvices[i]===adv?(adv.end==='deny'?'good':adv.end==='collapse'?'bad':''):'');
+    btn.onclick=null;
+    btn.style.opacity=(allAdvices[i]===adv)?'1':'0.3';
+  });
+  if(!window._adviceLog)window._adviceLog=[];
+  window._adviceLog.push(adv.end);
+  if(adv.end==='deny')endScore+=1;
+  else if(adv.end==='collapse')endScore-=1;
+  var resp=document.createElement('div');
+  resp.style.cssText='margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.04);border-left:2px solid '+(adv.end==='deny'?'#4ade80':adv.end==='collapse'?'#f87171':'#a78bfa')+';border-radius:0 8px 8px 0;font-size:.82rem;color:var(--text);font-family:"Noto Serif KR",serif;line-height:1.7;';
+  resp.textContent=adv.resp;
+  choicesEl.appendChild(resp);
+  setTimeout(function(){nextBtn.style.display='block';},400);
+}
+
+function nextDialog(){
+  if(typing){clearInterval(typeInt);document.getElementById('d-text-inner').textContent=fullTxt;typing=false;return;}
+  dIdx++;renderDialog();
+}
+
+function nextPatient(){
+  patientIdx++;
+  var day=DAYS[dayIdx];
+  if(patientIdx>=day.patients.length){
+    // 하루 끝 → 귀가 화면
+    dayIdx++;
+    if(dayIdx>=DAYS.length){calcEnding();return;}
+    var restIdx=dayIdx-1; // REST_SCENES[0]=null(Day1끝), [1]=Day2끝 등
+    showRestScreen(restIdx,function(){
+      showDayScreen();
+    });
+  } else {
+    beginPatient();
+  }
+}
+
+function updatePatientNote(pat){
+  document.getElementById('pn-name').textContent=pat.name||'PATIENT';
+  var lines=document.getElementById('pn-lines');lines.innerHTML='';
+  if(pat.age){var r=document.createElement('div');r.className='pn-row';r.innerHTML='나이 <span>'+pat.age+'세</span>';lines.appendChild(r);}
+}
+
+function beginPatient(){
+  var day=DAYS[dayIdx];
+  var pat=day.patients[patientIdx];
+  dIdx=0;dMode='pre';
+
+  // 회차 기억 — Day1 첫 환자 대화 변형
+  if(dayIdx===0&&patientIdx===0&&prevEnding){
+    pat=JSON.parse(JSON.stringify(pat));
+    if(prevEnding==='deny'){
+      pat.pre=[
+        {sp:"기록지",tx:"환자 최민서, 27세. 증상: 색채 인식 이상. — 이 파일, 어디서 본 것 같다."},
+        {sp:"최민서",tx:"선생님, 남자친구 얼굴이 화날 때는 빨갛게, 웃을 때는 회색으로 보여요."},
+        {sp:"치료사",tx:"(이상하다. 이 증상, 전에도 들은 것 같다.)"},
+        {sp:"최민서",tx:"선생님? 괜찮으세요?"},
+        {sp:"치료사",tx:"색채 감정 투사예요. 오늘 테스트를 해볼게요."}
+      ];
+    } else if(prevEnding==='accept'){
+      pat.pre=[
+        {sp:"기록지",tx:"환자 최민서, 27세. — 처음 보는 이름인데 낯설지 않다."},
+        {sp:"최민서",tx:"선생님, 남자친구 얼굴이 화날 때는 빨갛게, 웃을 때는 회색으로 보여요."},
+        {sp:"치료사",tx:"(나도 그런 적이 있었다. 아주 오래 전에.)"},
+        {sp:"치료사",tx:"색채 감정 투사예요. 오늘 테스트를 해볼게요."}
+      ];
+    } else if(prevEnding==='collapse'){
+      pat.pre=[
+        {sp:"기록지",tx:"환자 최민서, 27세. — 이 글씨가 흔들린다."},
+        {sp:"치료사",tx:"(방이... 작다. 오늘따라 유난히 작다.)"},
+        {sp:"최민서",tx:"선생님, 남자친구 얼굴이 화날 때는 빨갛게, 웃을 때는 회색으로 보여요."},
+        {sp:"치료사",tx:"...색채 감정 투사예요. 오늘 테스트를 해볼게요."},
+        {sp:"내레이션",tx:"(손이 조금 떨렸다.)"}
+      ];
+    }
+  }
+
+  // 회차 기억 — Day7 김하은 변형
+  if(dayIdx===6&&patientIdx===0&&prevEnding){
+    pat=JSON.parse(JSON.stringify(pat));
+    if(prevEnding==='deny'){
+      pat.pre.splice(1,0,{sp:"김하은",tx:"지난번처럼 또 부정하실 건가요?"});
+    } else if(prevEnding==='accept'){
+      pat.pre.splice(1,0,{sp:"김하은",tx:"지난번엔 기억하셨죠. 이번에도 그럴 수 있을 거예요."});
+    } else if(prevEnding==='collapse'){
+      pat.pre.splice(1,0,{sp:"김하은",tx:"지난번엔 결국 아무것도 남지 않았어요. 기억하세요?"});
+    }
+  }
+
+  updatePatientNote(pat);
+  document.getElementById('d-badge').textContent=pat.badge||pat.name;
+  document.getElementById('d-day-lbl').textContent='DAY '+(dayIdx+1);
+  drawBg(dayIdx,bgBreak);
   show('s-dialog');
   renderDialog();
 }
 
-// ================================================================
-//  PUZZLE ENGINE
-// ================================================================
-function startPuzzle(){
-  const pz=STORY[chIdx].puzzle;
-  puzzleOk=false;
-  document.getElementById('pz-ch').textContent=STORY[chIdx].badge+' · 착시 검사';
-  document.getElementById('pz-title').textContent=pz.title;
-  document.getElementById('pz-desc').textContent=pz.desc;
-  document.getElementById('pz-q').textContent=pz.q;
-  document.getElementById('pz-fb').textContent='';
-  document.getElementById('pz-fb').className='';
-  document.getElementById('hint-txt').style.display='none';
-  document.getElementById('hint-txt').textContent=pz.hint;
-  renderPuzzleVis(pz);
-  renderPuzzleBtns(pz);
-  show('s-puzzle');
-  startTimer(pz.timeSec);
+function startDayPatients(){
+  patientIdx=0;beginPatient();
 }
 
 function renderPuzzleVis(pz){
-  const vis=document.getElementById('pz-vis');
-  vis.innerHTML='';
-  const cv2=document.createElement('canvas');
-  cv2.className='pcv';
+  var vis=document.getElementById('pz-vis');vis.innerHTML='';
+  var cv2=document.createElement('canvas');cv2.className='pcv';
   vis.appendChild(cv2);
+  var c=cv2.getContext('2d');
 
-  if(pz.id==='color_same'){
-    cv2.width=420;cv2.height=200;
-    const c=cv2.getContext('2d');
-    c.fillStyle='#151528';c.fillRect(0,0,420,200);
-    c.fillStyle='#0d0d1a';c.fillRect(10,10,190,180);
-    c.fillStyle='#d8d8f0';c.fillRect(220,10,190,180);
-    const col='rgb(148,142,200)';
-    c.fillStyle=col;c.beginPath();c.arc(105,100,48,0,Math.PI*2);c.fill();
-    c.fillStyle=col;c.beginPath();c.arc(315,100,48,0,Math.PI*2);c.fill();
-    c.fillStyle='#6b7280';c.font='bold 15px sans-serif';c.textAlign='center';
-    c.fillText('A',105,174);c.fillText('B',315,174);
+  if(pz.id==='color_contrast'){
+    cv2.width=420;cv2.height=190;
+    c.fillStyle='#080818';c.fillRect(0,0,420,190);
+    c.fillStyle='#0b0b20';c.fillRect(5,5,200,180);
+    c.fillStyle='#d0ccf0';c.fillRect(215,5,200,180);
+    var col='rgb(148,143,198)';
+    c.fillStyle=col;c.beginPath();c.arc(105,95,50,0,Math.PI*2);c.fill();
+    c.fillStyle=col;c.beginPath();c.arc(315,95,50,0,Math.PI*2);c.fill();
+    c.fillStyle='#5a5870';c.font='bold 13px sans-serif';c.textAlign='center';
+    c.fillText('A',105,176);c.fillText('B',315,176);
   }
-
-  else if(pz.id==='size_ebbinghaus'){
-    cv2.width=420;cv2.height=200;
-    const c=cv2.getContext('2d');
-    c.fillStyle='#0d0d1a';c.fillRect(0,0,420,200);
-    drawEbbinghaus(c,105,100,32,52,'#a78bfa');
-    drawEbbinghaus(c,315,100,32,16,'#f472b6');
-    c.fillStyle='#6b7280';c.font='13px sans-serif';c.textAlign='center';
-    c.fillText('왼쪽',105,188);c.fillText('오른쪽',315,188);
+  else if(pz.id==='muller_lyer'){
+    cv2.width=400;cv2.height=180;
+    c.fillStyle='#080818';c.fillRect(0,0,400,180);
+    drawML(c,40,65,40+160,65,'#a78bfa','out','A');
+    drawML(c,40,120,40+160,120,'#f472b6','in','B');
   }
-
+  else if(pz.id==='ebbinghaus'){
+    cv2.width=440;cv2.height=200;
+    c.fillStyle='#080818';c.fillRect(0,0,440,200);
+    drawEbb(c,110,100,33,54,'#a78bfa');
+    drawEbb(c,330,100,33,14,'#f472b6');
+    c.fillStyle='#3a385e';c.font='12px sans-serif';c.textAlign='center';
+    c.fillText('왼쪽',110,186);c.fillText('오른쪽',330,186);
+  }
+  else if(pz.id==='cafe_wall'){
+    cv2.width=400;cv2.height=210;
+    c.fillStyle='#080818';c.fillRect(0,0,400,210);
+    drawCafeWall(c,400,210);
+  }
   else if(pz.id==='rotation'){
     cv2.width=380;cv2.height=260;
-    const c=cv2.getContext('2d');
-    c.fillStyle='#0d0d1a';c.fillRect(0,0,380,260);
-    drawRotation(c,190,130,100);
-    c.fillStyle='#3d3b60';c.font='12px sans-serif';c.textAlign='center';
-    c.fillText('가만히 바라보세요...',190,248);
+    c.fillStyle='#080818';c.fillRect(0,0,380,260);
+    drawSnakeRings(c,190,130,110);
+    c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+    c.fillText('가만히 바라보세요...',190,250);
   }
-
-  else if(pz.id==='negative_space'){
-    cv2.width=380;cv2.height=240;
-    const c=cv2.getContext('2d');
-    c.fillStyle='#0d0d1a';c.fillRect(0,0,380,240);
-    drawRubinVase(c,190,120,90);
-    c.fillStyle='#3d3b60';c.font='12px sans-serif';c.textAlign='center';
-    c.fillText('꽃병인가요, 얼굴인가요?',190,228);
-  }
-
-  else if(pz.id==='ponzo_reality'){
+  else if(pz.id==='ponzo'){
     cv2.width=340;cv2.height=240;
-    const c=cv2.getContext('2d');
-    c.fillStyle='#0d0d1a';c.fillRect(0,0,340,240);
+    c.fillStyle='#080818';c.fillRect(0,0,340,240);
     drawPonzo(c,170,240);
-    c.fillStyle='#3d3b60';c.font='12px sans-serif';c.textAlign='center';
-    c.fillText('A선과 B선 중 어느 것이 더 길까요?',170,228);
   }
-
-  else if(pz.id==='cafe_wall'){
-    cv2.width=400;cv2.height=220;
-    const c=cv2.getContext('2d');
-    c.fillStyle='#0d0d1a';c.fillRect(0,0,400,220);
-    drawCafeWall(c,400,220);
+  else if(pz.id==='hering'){
+    cv2.width=380;cv2.height=230;
+    c.fillStyle='#080818';c.fillRect(0,0,380,230);
+    drawHering(c,190,115,155);
   }
-}
-
-function drawEbbinghaus(c,cx,cy,inner,outer,color){
-  const n=6;
-  for(let i=0;i<n;i++){
-    const a=i/n*Math.PI*2;
-    const d=inner+outer+10;
-    c.beginPath();c.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d,outer,0,Math.PI*2);
-    c.strokeStyle=color;c.lineWidth=2;c.stroke();
-    c.fillStyle='rgba(124,111,224,0.08)';c.fill();
+  else if(pz.id==='checker_shadow'){
+    cv2.width=360;cv2.height=280;
+    c.fillStyle='#080818';c.fillRect(0,0,360,280);
+    drawChecker(c,8,8,344,264);
   }
-  c.beginPath();c.arc(cx,cy,inner,0,Math.PI*2);
-  c.fillStyle=color;c.fill();
-}
+  else if(pz.id==='face_vase'){
+    cv2.width=360;cv2.height=240;
+    c.fillStyle='#080818';c.fillRect(0,0,360,240);
+    drawRubin(c,180,120,100);
+  }
+  else if(pz.id==='fraser_spiral'){
+    cv2.width=360;cv2.height=280;
+    c.fillStyle='#080818';c.fillRect(0,0,360,280);
+    drawFraser(c,180,140,105);
+    c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+    c.fillText('선을 따라가 보세요',180,268);
+  }
+  else if(pz.id==='scintillating_grid'){
+    cv2.width=380;cv2.height=260;
+    c.fillStyle='#080818';c.fillRect(0,0,380,260);
+    drawScintillating(c,380,260);
+  }
+  else if(pz.id==='necker_cube'){
+    cv2.width=300;cv2.height=260;
+    c.fillStyle='#080818';c.fillRect(0,0,300,260);
+    drawNecker(c,150,130,80);
+  }
+  else if(pz.id==='simultaneous_contrast'){
+    cv2.width=420;cv2.height=190;
+    c.fillStyle='#080818';c.fillRect(0,0,420,190);
+    c.fillStyle='#e8e4ff';c.fillRect(5,5,200,180);
+    c.fillStyle='#161426';c.fillRect(215,5,200,180);
+    var mc='rgb(140,138,180)';
+    c.fillStyle=mc;c.fillRect(60,55,80,80);
+    c.fillStyle=mc;c.fillRect(270,55,80,80);
+    c.fillStyle='#6b7280';c.font='13px sans-serif';c.textAlign='center';
+    c.fillText('A',100,175);c.fillText('B',310,175);
+  }
+  else if(pz.id==='penrose'){
+    // 진짜 펜로즈 불가능 삼각형 — SVG 인라인
+    vis.removeChild(cv2);
+    var svgNS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 340 300');
+    svg.setAttribute('width','340');svg.setAttribute('height','300');
+    svg.style.borderRadius='10px';svg.style.border='1px solid #14143a';svg.style.display='block';
+    function mk2(tag,a){var el=document.createElementNS(svgNS,tag);Object.keys(a).forEach(function(k){el.setAttribute(k,a[k]);});return el;}
+    function p2(pts,fill){return mk2('polygon',{points:pts,fill:fill,stroke:'#080818','stroke-width':'2.5','stroke-linejoin':'round'});}
 
-function drawRotation(c,cx,cy,r){
-  for(let ring=0;ring<4;ring++){
-    const rr=(ring+1)*r/4;
-    const n=14+ring*8;
-    for(let i=0;i<n;i++){
-      const a=i/n*Math.PI*2;
-      const off=(ring%2===0?1:-1)*0.25;
-      const px=cx+Math.cos(a+off)*rr, py=cy+Math.sin(a+off)*rr;
-      c.save();c.translate(px,py);c.rotate(a+(ring%2===0?Math.PI/4:-Math.PI/4));
-      c.fillStyle=i%2===0?'#1e1e38':'#a78bfa';
-      c.fillRect(-10,-5,20,10);c.restore();
+    svg.appendChild(mk2('rect',{width:'340',height:'300',fill:'#080818'}));
+
+    // 펜로즈 삼각형 구조:
+    // 외부 꼭짓점: T(170,25) BL(22,268) BR(318,268)
+    // 내부 꼭짓점: Ti(170,108) BLi(97,238) BRi(243,238)
+    // 빔 두께: ~40px
+
+    // ① 기본 세 빔 면 그리기 (레이어 아래부터)
+    // 왼쪽 빔 하단부 (어두운 면) — BL~BLi 구간
+    svg.appendChild(p2('22,268 68,268 97,238 68,200','#1e1046'));
+    // 아래 빔 (어두운 하단) — BL~BR 수평
+    svg.appendChild(p2('68,268 272,268 243,238 97,238','#1e1046'));
+    // 오른쪽 빔 (중간 보라) — BR~BRi~Ti~T 구간 오른면
+    svg.appendChild(p2('272,268 318,268 285,210 243,238','#5b21b6'));
+
+    // ② 위 빔 (밝은 면) — T~Ti 삼각형 위쪽
+    svg.appendChild(p2('170,25 126,108 170,108 214,108','#c4b5fd'));
+    // 위 빔 왼쪽 측면
+    svg.appendChild(p2('170,25 126,108 97,155 68,200','#8b5cf6'));
+    // 위 빔 오른쪽 측면
+    svg.appendChild(p2('170,25 214,108 243,155 272,200','#7c3aed'));
+
+    // ③ 꼭짓점 불가능 연결 (이 레이어가 착시의 핵심)
+    // 상단(T): 위 빔 밝은 면이 최상단 노출
+    svg.appendChild(p2('170,25 126,108 214,108','#c4b5fd'));
+
+    // 우하(BR): 아래빔(어두움)이 오른쪽 빔 앞으로 나옴 → 착시 ①
+    svg.appendChild(p2('243,238 272,268 318,268 285,238','#1e1046'));
+
+    // 좌하(BL): 위빔 측면(중간)이 아래빔 앞으로 나옴 → 착시 ②
+    svg.appendChild(p2('22,268 68,268 97,238 68,238','#8b5cf6'));
+
+    // 내부 삼각형 경계선 (3D 구조 강조)
+    svg.appendChild(mk2('polyline',{points:'170,108 243,238 97,238 170,108',fill:'none',stroke:'#080818','stroke-width':'3'}));
+
+    // 설명 텍스트
+    var t=mk2('text',{x:'170',y:'291',fill:'#2a2850','font-size':'10','font-family':'sans-serif','text-anchor':'middle'});
+    t.textContent='각 모서리는 논리적이지만, 전체는 존재할 수 없다';
+    svg.appendChild(t);
+
+    vis.appendChild(svg);
+  }
+  else if(pz.id==='wagon_wheel'){
+    cv2.width=300;cv2.height=260;
+    c.fillStyle='#080818';c.fillRect(0,0,300,260);
+    drawWagonWheel(c,150,130,90);
+  }
+  else if(pz.id==='hybrid_image'){
+    cv2.width=380;cv2.height=260;
+    c.fillStyle='#080818';c.fillRect(0,0,380,260);
+    drawHybridFace(c,190,130,90);
+    c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+    c.fillText('화면에서 멀리 해보세요',190,250);
+  }
+  else if(pz.id==='ames_room'){
+    cv2.width=380;cv2.height=260;
+    c.fillStyle='#080818';c.fillRect(0,0,380,260);
+    drawAmesRoom(c,380,260);
+  }
+  else if(pz.id==='inverted_face'){
+    cv2.width=320;cv2.height=280;
+    c.fillStyle='#080818';c.fillRect(0,0,320,280);
+    drawInvertedFace(c,160,140,100);
+  }
+  else if(pz.id==='impossible_motion'){
+    cv2.width=360;cv2.height=260;
+    c.fillStyle='#080818';c.fillRect(0,0,360,260);
+    drawImpossibleMotion(c,360,260);
+    c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+    c.fillText('각 공의 궤적을 따로 추적해보세요',180,250);
+  }
+  else if(pz.id==='haeun_mirror'){
+    // 김하은 퍼즐 — 두 얼굴이 서서히 뒤바뀌는 SVG
+    vis.removeChild(cv2);
+    var svgNS='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox','0 0 360 240');
+    svg.setAttribute('width','360');svg.setAttribute('height','240');
+    svg.style.borderRadius='10px';svg.style.border='1px solid #14143a';svg.style.display='block';
+    function mk(tag,a){var el=document.createElementNS(svgNS,tag);Object.keys(a).forEach(function(k){el.setAttribute(k,a[k]);});return el;}
+    // 배경
+    svg.appendChild(mk('rect',{width:'360',height:'240',fill:'#080818'}));
+    // 중앙 구분선
+    svg.appendChild(mk('line',{x1:'180',y1:'20',x2:'180',y2:'220',stroke:'#2a2850','stroke-width':'1.5','stroke-dasharray':'4 4'}));
+    // 라벨 텍스트
+    var lblL=mk('text',{x:'90',y:'16',fill:'#3a385e','font-size':'10','font-family':'sans-serif','text-anchor':'middle'});lblL.textContent='왼쪽';svg.appendChild(lblL);
+    var lblR=mk('text',{x:'270',y:'16',fill:'#3a385e','font-size':'10','font-family':'sans-serif','text-anchor':'middle'});lblR.textContent='오른쪽';svg.appendChild(lblR);
+
+    // 얼굴 그리기 함수 (캔버스 없이 SVG로)
+    function drawFaceSVG(cx,cy,r,eyeFlip,mouthFlip,skinCol,eyeCol){
+      var g=mk('g',{});
+      // 얼굴 윤곽
+      g.appendChild(mk('ellipse',{cx:cx,cy:cy,rx:r,ry:r*1.15,fill:skinCol,stroke:'#14143a','stroke-width':'1.5'}));
+      // 머리카락
+      g.appendChild(mk('ellipse',{cx:cx,cy:cy-r*0.85,rx:r*0.98,ry:r*0.35,fill:'#1a0a2e'}));
+      // 눈썹
+      g.appendChild(mk('path',{d:'M'+(cx-r*0.45)+','+(cy-r*0.32)+'Q'+(cx-r*0.2)+','+(cy-(eyeFlip?r*0.42:r*0.22))+' '+(cx-r*0.0)+','+(cy-r*0.3),fill:'none',stroke:'#1a0a2e','stroke-width':'2','stroke-linecap':'round'}));
+      g.appendChild(mk('path',{d:'M'+(cx+r*0.0)+','+(cy-r*0.3)+'Q'+(cx+r*0.2)+','+(cy-(eyeFlip?r*0.42:r*0.22))+' '+(cx+r*0.45)+','+(cy-r*0.32),fill:'none',stroke:'#1a0a2e','stroke-width':'2','stroke-linecap':'round'}));
+      // 눈
+      g.appendChild(mk('ellipse',{cx:cx-r*0.28,cy:cy-r*0.12,rx:r*0.14,ry:eyeFlip?r*0.06:r*0.12,fill:eyeCol}));
+      g.appendChild(mk('ellipse',{cx:cx+r*0.28,cy:cy-r*0.12,rx:r*0.14,ry:eyeFlip?r*0.06:r*0.12,fill:eyeCol}));
+      // 동공
+      g.appendChild(mk('circle',{cx:cx-r*0.28,cy:cy-r*0.12,r:r*0.05,fill:'#080818'}));
+      g.appendChild(mk('circle',{cx:cx+r*0.28,cy:cy-r*0.12,r:r*0.05,fill:'#080818'}));
+      // 코
+      g.appendChild(mk('path',{d:'M'+cx+','+(cy+r*0.05)+'L'+(cx-r*0.08)+','+(cy+r*0.22)+'L'+(cx+r*0.08)+','+(cy+r*0.22),fill:'none',stroke:'rgba(0,0,0,0.3)','stroke-width':'1.5','stroke-linecap':'round'}));
+      // 입 (mouthFlip: 뒤집힌 표정)
+      if(mouthFlip){
+        g.appendChild(mk('path',{d:'M'+(cx-r*0.28)+','+(cy+r*0.38)+'Q'+cx+','+(cy+r*0.28)+' '+(cx+r*0.28)+','+(cy+r*0.38),fill:'none',stroke:'#1a0a2e','stroke-width':'2','stroke-linecap':'round'}));
+      } else {
+        g.appendChild(mk('path',{d:'M'+(cx-r*0.28)+','+(cy+r*0.32)+'Q'+cx+','+(cy+r*0.46)+' '+(cx+r*0.28)+','+(cy+r*0.32),fill:'none',stroke:'#1a0a2e','stroke-width':'2','stroke-linecap':'round'}));
+      }
+      return g;
     }
+
+    // 왼쪽 얼굴: "치료사처럼 보이는" — 정상적인 표정
+    svg.appendChild(drawFaceSVG(90,120,62,false,false,'#c4b5fd','#1a0a2e'));
+    // 오른쪽 얼굴: "환자처럼 보이는" — 눈이 약간 다르고 표정 반전
+    svg.appendChild(drawFaceSVG(270,120,62,true,true,'#ddd6fe','#1a0a2e'));
+
+    // 물음표 오버레이 — 두 얼굴 위에 흐릿하게 겹쳐진 동일한 실루엣 암시
+    var ov=mk('text',{x:'180',y:'138',fill:'rgba(139,124,248,0.07)','font-size':'120','font-family':'serif','text-anchor':'middle','font-weight':'700'});
+    ov.textContent='?';svg.appendChild(ov);
+
+    // 하단 설명
+    var desc=mk('text',{x:'180',y:'234',fill:'#2a2850','font-size':'10','font-family':'sans-serif','text-anchor':'middle'});
+    desc.textContent='두 얼굴은 같은 얼굴입니다';svg.appendChild(desc);
+
+    // CSS 애니메이션으로 두 얼굴 색이 서서히 교환되는 효과
+    var style=document.createElement('style');
+    style.textContent='@keyframes faceSwap{0%,100%{opacity:1}50%{opacity:0.4}}';
+    document.head.appendChild(style);
+    svg.querySelector('g').style.animation='faceSwap 3s ease-in-out infinite';
+    svg.querySelectorAll('g')[1].style.animation='faceSwap 3s ease-in-out infinite reverse';
+
+    vis.appendChild(svg);
   }
 }
 
-function drawRubinVase(c,cx,cy,h){
-  c.fillStyle='#e8e4ff';
-  // vase shape (white)
-  c.beginPath();
-  c.moveTo(cx,cy-h);
-  c.bezierCurveTo(cx+40,cy-h+40,cx+60,cy-40,cx+50,cy+h);
-  c.lineTo(cx-50,cy+h);
-  c.bezierCurveTo(cx-60,cy-40,cx-40,cy-h+40,cx,cy-h);
-  c.fill();
-  // faces (black) — fill the whole canvas then cut out vase
-  c.fillStyle='#0d0d1a';
-  c.fillRect(cx-90,cy-h-10,90,h*2+20);
-  c.fillRect(cx,cy-h-10,90,h*2+20);
-  c.fillStyle='#e8e4ff';
-  c.beginPath();
-  c.moveTo(cx,cy-h);
-  c.bezierCurveTo(cx+40,cy-h+40,cx+60,cy-40,cx+50,cy+h);
-  c.lineTo(cx-50,cy+h);
-  c.bezierCurveTo(cx-60,cy-40,cx-40,cy-h+40,cx,cy-h);
-  c.fill();
+function drawML(c,x1,y1,x2,y2,col,type,lbl){
+  c.strokeStyle=col;c.lineWidth=3;c.lineCap='round';
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+  var aw=18,ah=11;
+  if(type==='out'){drawV(c,x1,y1,-1,col,aw,ah);drawV(c,x2,y2,1,col,aw,ah);}
+  else{drawV(c,x1,y1,1,col,aw,ah);drawV(c,x2,y2,-1,col,aw,ah);}
+  c.fillStyle='#5a5870';c.font='bold 13px sans-serif';c.textAlign='center';
+  c.fillText(lbl,(x1+x2)/2,y1-12);
 }
-
-function drawPonzo(c,cx,H){
-  c.strokeStyle='#2d2d50';c.lineWidth=2;
-  c.beginPath();c.moveTo(cx-80,H-20);c.lineTo(cx,H*0.12);c.stroke();
-  c.beginPath();c.moveTo(cx+80,H-20);c.lineTo(cx,H*0.12);c.stroke();
-  // equal horizontal lines
-  c.strokeStyle='#a78bfa';c.lineWidth=4;
-  c.beginPath();c.moveTo(cx-55,H*0.65);c.lineTo(cx+55,H*0.65);c.stroke();
-  c.beginPath();c.moveTo(cx-55,H*0.3);c.lineTo(cx+55,H*0.3);c.stroke();
-  c.fillStyle='#6b7280';c.font='bold 13px sans-serif';c.textAlign='right';
-  c.fillText('B',cx-58,H*0.65+5);
-  c.fillText('A',cx-58,H*0.3+5);
+function drawV(c,x,y,dir,col,aw,ah){
+  c.strokeStyle=col;c.lineWidth=2;
+  c.beginPath();c.moveTo(x,y);c.lineTo(x+dir*aw,y-ah);c.stroke();
+  c.beginPath();c.moveTo(x,y);c.lineTo(x+dir*aw,y+ah);c.stroke();
 }
-
+function drawEbb(c,cx,cy,inner,outer,col){
+  for(var i=0;i<6;i++){
+    var a=i/6*Math.PI*2;var d=inner+outer+12;
+    c.beginPath();c.arc(cx+Math.cos(a)*d,cy+Math.sin(a)*d,outer,0,Math.PI*2);
+    c.strokeStyle=col;c.lineWidth=1.5;c.stroke();
+    c.fillStyle='rgba(139,124,248,.04)';c.fill();
+  }
+  c.beginPath();c.arc(cx,cy,inner,0,Math.PI*2);c.fillStyle=col;c.fill();
+}
 function drawCafeWall(c,W,H){
-  const rows=7,sz=26;
-  for(let r=0;r<rows;r++){
-    const off=(r%2)*(sz/2);
-    const cols=Math.ceil((W+sz)/sz);
-    for(let col=0;col<cols;col++){
-      const x=off+col*sz-sz/2, y=r*sz+10;
-      c.fillStyle=(r+col)%2===0?'#d4d0f0':'#18183a';
+  var rows=7,sz=26;
+  for(var r=0;r<rows;r++){
+    var off=(r%2)*(sz/2);
+    var cols2=Math.ceil((W+sz)/sz);
+    for(var col=0;col<cols2;col++){
+      var x=off+col*sz-sz/2,y=r*sz+10;
+      c.fillStyle=(r+col)%2===0?'#d4d0f0':'#181830';
       c.fillRect(x,y,sz,sz);
     }
     c.fillStyle='#5a5870';c.fillRect(0,r*sz+10-1,W,2);
   }
 }
+function drawSnakeRings(c,cx,cy,r){
+  for(var ring=0;ring<5;ring++){
+    var rr=(ring+1)*r/5;var n=18+ring*8;
+    for(var i=0;i<n;i++){
+      var a=i/n*Math.PI*2;var off=(ring%2===0?1:-1)*0.28;
+      var px=cx+Math.cos(a+off)*rr,py=cy+Math.sin(a+off)*rr;
+      c.save();c.translate(px,py);c.rotate(a+(ring%2===0?Math.PI/4:-Math.PI/4));
+      c.fillStyle=i%2===0?'#1a1a32':'#b8b4e0';
+      c.fillRect(-10,-5,20,10);c.restore();
+    }
+  }
+}
+function drawPonzo(c,cx,H){
+  c.strokeStyle='#2d2d50';c.lineWidth=2;
+  c.beginPath();c.moveTo(cx-75,H-18);c.lineTo(cx,H*0.1);c.stroke();
+  c.beginPath();c.moveTo(cx+75,H-18);c.lineTo(cx,H*0.1);c.stroke();
+  c.strokeStyle='#a78bfa';c.lineWidth=4;
+  c.beginPath();c.moveTo(cx-52,H*0.65);c.lineTo(cx+52,H*0.65);c.stroke();
+  c.beginPath();c.moveTo(cx-52,H*0.28);c.lineTo(cx+52,H*0.28);c.stroke();
+  c.fillStyle='#5a5870';c.font='bold 12px sans-serif';c.textAlign='right';
+  c.fillText('B',cx-55,H*0.65+5);c.fillText('A',cx-55,H*0.28+5);
+}
+function drawHering(c,cx,cy,len){
+  var n=36;
+  for(var i=0;i<n;i++){
+    var a=i/n*Math.PI*2;
+    c.strokeStyle='rgba(80,76,130,.45)';c.lineWidth=1;
+    c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*200,cy+Math.sin(a)*200);c.stroke();
+  }
+  c.strokeStyle='#a78bfa';c.lineWidth=3;
+  c.beginPath();c.moveTo(cx-len,cy-28);c.lineTo(cx+len,cy-28);c.stroke();
+  c.beginPath();c.moveTo(cx-len,cy+28);c.lineTo(cx+len,cy+28);c.stroke();
+  c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+  c.fillText('두 보라선 — 실제로 직선입니다',cx,cy+70);
+}
+function drawChecker(c,ox,oy,w,h){
+  // Adelson 체커 그림자 착시
+  // A칸(그림자 속 어두운 칸)과 B칸(밝은 곳 밝은 칸)이 실제론 같은 색
+  var cols=8, rows=8;
+  var sz=Math.floor(Math.min(w,h)/8);
+  var startX=ox+(w-sz*cols)/2, startY=oy+(h-sz*rows)/2;
 
-function renderPuzzleBtns(pz){
-  const wrap=document.getElementById('pz-btns');
-  wrap.innerHTML='';
-  pz.choices.forEach(ch2=>{
-    const b=document.createElement('button');
-    b.className='cb';b.textContent=ch2;
-    b.addEventListener('click',()=>answerPuzzle(ch2,b));
+  // 1) 체커보드 — 연보라/짙은 남색
+  for(var r=0;r<rows;r++){
+    for(var cc=0;cc<cols;cc++){
+      var light=(r+cc)%2===0;
+      c.fillStyle=light?'#b8b4d8':'#1e1c38';
+      c.fillRect(startX+cc*sz,startY+r*sz,sz,sz);
+    }
+  }
+
+  // 2) 원통 — 중앙 오른쪽 위에
+  var cylX=startX+sz*4.5, cylY=startY+sz*1.5, cylR=sz*0.9, cylH=sz*3.5;
+  // 원통 그림자 (우하 방향으로 길게)
+  var shg=c.createRadialGradient(cylX+sz*0.3,cylY+cylH+sz*1.2,sz*0.1,
+                                  cylX,cylY+cylH+sz*0.8,sz*2.5);
+  shg.addColorStop(0,'rgba(0,0,20,0.78)');
+  shg.addColorStop(0.4,'rgba(0,0,20,0.45)');
+  shg.addColorStop(1,'rgba(0,0,20,0)');
+  c.fillStyle=shg;
+  c.beginPath();
+  c.ellipse(cylX+sz*0.2,cylY+cylH+sz*1,cylR*2.4,cylR*0.7,-0.18,0,Math.PI*2);
+  c.fill();
+
+  // 원통 몸체 (그라데이션)
+  var cg=c.createLinearGradient(cylX-cylR,cylY,cylX+cylR,cylY);
+  cg.addColorStop(0,'#2a2848');cg.addColorStop(0.35,'#7c78b8');
+  cg.addColorStop(0.65,'#9490cc');cg.addColorStop(1,'#1a183a');
+  c.fillStyle=cg;
+  c.fillRect(cylX-cylR,cylY,cylR*2,cylH);
+  // 윗 타원 (밝음)
+  c.fillStyle='#a8a4d0';
+  c.beginPath();c.ellipse(cylX,cylY,cylR,cylR*0.32,0,0,Math.PI*2);c.fill();
+  // 아래 타원 (어두움)
+  c.fillStyle='#4a4878';
+  c.beginPath();c.ellipse(cylX,cylY+cylH,cylR,cylR*0.32,0,0,Math.PI);c.fill();
+
+  // 3) A칸, B칸 선택 — 같은 회색값이지만 다르게 보임
+  // A = 그림자 속 어두운(흑) 칸 → 실제 색 약 #787878
+  // B = 그림자 밖 밝은(백) 칸 → 실제 색도 약 #787878
+  // 하지만 실제 구현에서는 그냥 라벨로 표시하고, 체커의 착시를 설명
+  var Acol=4, Arow=4; // 그림자 속 어두운 칸
+  var Bcol=6, Brow=2; // 그림자 밖 밝은 칸
+  var Ax2=startX+Acol*sz, Ay2=startY+Arow*sz;
+  var Bx2=startX+Bcol*sz, By2=startY+Brow*sz;
+
+  // A와 B 사이 이음선 (같은 색임을 암시)
+  c.strokeStyle='rgba(248,113,113,0.5)';c.lineWidth=1;c.setLineDash([3,3]);
+  c.beginPath();c.moveTo(Ax2+sz/2,Ay2+sz/2);c.lineTo(Bx2+sz/2,By2+sz/2);c.stroke();
+  c.setLineDash([]);
+
+  // A 라벨 (그림자 속)
+  c.strokeStyle='#f87171';c.lineWidth=2.5;c.strokeRect(Ax2+1,Ay2+1,sz-2,sz-2);
+  c.fillStyle='#f87171';c.font='bold '+(sz*0.6)+'px sans-serif';c.textAlign='center';
+  c.fillText('A',Ax2+sz/2,Ay2+sz/2+sz*0.22);
+
+  // B 라벨 (밝은 곳)
+  c.strokeStyle='#34d399';c.lineWidth=2.5;c.strokeRect(Bx2+1,By2+1,sz-2,sz-2);
+  c.fillStyle='#34d399';
+  c.fillText('B',Bx2+sz/2,By2+sz/2+sz*0.22);
+}
+function drawRubin(c,cx,cy,h){
+  var W=c.canvas.width, H=c.canvas.height;
+  var vw=h*0.52; // 꽃병 반폭
+  var top=cy-h, bot=cy+h;
+
+  // 1) 배경 전체를 검정으로 (얼굴 색)
+  c.fillStyle='#0d0b1e';
+  c.fillRect(0,0,W,H);
+
+  // 2) 얼굴 윤곽 클리핑: 왼쪽 얼굴 = 꽃병 왼쪽 공간
+  // 왼쪽 얼굴 실루엣 (오른쪽 경계 = 꽃병 왼쪽 곡선)
+  c.save();
+  c.beginPath();
+  // 왼쪽 얼굴: 왼쪽 경계(직선)부터 꽃병 왼쪽 곡선까지
+  c.moveTo(cx-vw*2.8, top-4);
+  c.lineTo(cx-vw*2.8, bot+4);
+  c.lineTo(cx-vw, bot);  // 꽃병 바닥 왼쪽
+  // 꽃병 왼쪽 곡선 (아래→위)
+  c.bezierCurveTo(cx-vw*1.5, cy+h*0.3, cx-vw*1.3, cy-h*0.3, cx-vw*0.7, top+h*0.35);
+  c.bezierCurveTo(cx-vw*0.3, top+h*0.05, cx-vw*0.1, top, cx, top);
+  c.lineTo(cx, top-4);
+  c.lineTo(cx-vw*2.8, top-4);
+  c.closePath();
+  c.fillStyle='#c4b5fd';
+  c.fill();
+  c.restore();
+
+  // 3) 오른쪽 얼굴 (꽃병 오른쪽 공간)
+  c.save();
+  c.beginPath();
+  c.moveTo(cx+vw*2.8, top-4);
+  c.lineTo(cx, top-4);
+  c.lineTo(cx, top);
+  // 꽃병 오른쪽 곡선 (위→아래)
+  c.bezierCurveTo(cx+vw*0.1, top, cx+vw*0.3, top+h*0.05, cx+vw*0.7, top+h*0.35);
+  c.bezierCurveTo(cx+vw*1.3, cy-h*0.3, cx+vw*1.5, cy+h*0.3, cx+vw, bot);
+  c.lineTo(cx+vw*2.8, bot+4);
+  c.lineTo(cx+vw*2.8, top-4);
+  c.closePath();
+  c.fillStyle='#c4b5fd';
+  c.fill();
+  c.restore();
+
+  // 4) 가운데 꽃병 (밝은 색, 얼굴 위에 그림)
+  c.beginPath();
+  c.moveTo(cx, top);
+  // 오른쪽 곡선 (위→아래)
+  c.bezierCurveTo(cx+vw*0.1, top, cx+vw*0.3, top+h*0.05, cx+vw*0.7, top+h*0.35);
+  c.bezierCurveTo(cx+vw*1.3, cy-h*0.3, cx+vw*1.5, cy+h*0.3, cx+vw, bot);
+  // 바닥
+  c.lineTo(cx-vw, bot);
+  // 왼쪽 곡선 (아래→위)
+  c.bezierCurveTo(cx-vw*1.5, cy+h*0.3, cx-vw*1.3, cy-h*0.3, cx-vw*0.7, top+h*0.35);
+  c.bezierCurveTo(cx-vw*0.3, top+h*0.05, cx-vw*0.1, top, cx, top);
+  c.closePath();
+  c.fillStyle='#ede9fe';
+  c.fill();
+
+  // 5) 꽃병 안 음영 (입체감)
+  var grad=c.createLinearGradient(cx-vw,cy,cx+vw,cy);
+  grad.addColorStop(0,'rgba(100,80,180,0.35)');
+  grad.addColorStop(0.5,'rgba(255,255,255,0.08)');
+  grad.addColorStop(1,'rgba(100,80,180,0.35)');
+  c.fillStyle=grad;
+  c.beginPath();
+  c.moveTo(cx, top);
+  c.bezierCurveTo(cx+vw*0.1, top, cx+vw*0.3, top+h*0.05, cx+vw*0.7, top+h*0.35);
+  c.bezierCurveTo(cx+vw*1.3, cy-h*0.3, cx+vw*1.5, cy+h*0.3, cx+vw, bot);
+  c.lineTo(cx-vw, bot);
+  c.bezierCurveTo(cx-vw*1.5, cy+h*0.3, cx-vw*1.3, cy-h*0.3, cx-vw*0.7, top+h*0.35);
+  c.bezierCurveTo(cx-vw*0.3, top+h*0.05, cx-vw*0.1, top, cx, top);
+  c.closePath();
+  c.fill();
+
+  // 6) 얼굴 이목구비 힌트 (코, 입 곡선으로 얼굴임을 암시)
+  c.strokeStyle='rgba(30,20,60,0.5)'; c.lineWidth=1.2;
+  // 왼쪽 얼굴 눈, 코 (왼쪽에 미러)
+  var ex=cx-vw*1.7, ey=cy-h*0.18;
+  c.beginPath(); c.arc(ex, ey, h*0.06, 0, Math.PI*2); c.fillStyle='rgba(30,20,60,0.4)'; c.fill();
+  // 오른쪽 얼굴 눈
+  c.beginPath(); c.arc(cx+vw*1.7, ey, h*0.06, 0, Math.PI*2); c.fill();
+
+  c.fillStyle='rgba(196,181,253,0.65)';
+  c.font='bold 12px monospace'; c.textAlign='center';
+  c.fillText('꽃병? 얼굴?', cx, bot+20);
+}
+function drawFraser(c,cx,cy,r){
+  // 프레이저 나선: 실제로는 동심원이지만 나선처럼 보임
+  // 비결: 각 원의 작은 선분에 사선 패턴을 교대로 넣으면 원이 나선으로 보임
+  var numRings=6;
+  var segW=10; // 각 선분의 각도 너비(도)
+
+  for(var ring=1;ring<=numRings;ring++){
+    var rr=r*ring/numRings;
+    var thick=r/(numRings*1.4);
+    var totalSegs=Math.round(2*Math.PI*rr/segW);
+    if(totalSegs<12)totalSegs=12;
+
+    for(var s=0;s<totalSegs;s++){
+      var a1=s/totalSegs*Math.PI*2;
+      var a2=(s+1)/totalSegs*Math.PI*2;
+      var aMid=(a1+a2)/2;
+
+      // 선분의 중심점
+      var mx=cx+Math.cos(aMid)*rr, my=cy+Math.sin(aMid)*rr;
+
+      // 사선 방향: 홀수/짝수 링에 따라 반대 방향으로 기울임
+      // 이 기울기가 나선 착시를 만드는 핵심
+      var tilt=(ring%2===0?1:-1)*0.45;
+      var tiltAngle=aMid+Math.PI/2+tilt;
+
+      // 체크 패턴 (흑백 교대)
+      var isLight=(s+ring)%2===0;
+      c.fillStyle=isLight?'#ddd6fe':'#1a1838';
+
+      // 호 그리기
+      c.beginPath();
+      c.arc(cx,cy,rr+thick/2,a1,a2);
+      c.arc(cx,cy,rr-thick/2,a2,a1,true);
+      c.closePath();
+      c.fill();
+
+      // 사선 힌트 추가
+      if(!isLight){
+        c.save();
+        c.beginPath();c.arc(cx,cy,rr+thick/2,a1,a2);
+        c.arc(cx,cy,rr-thick/2,a2,a1,true);
+        c.closePath();c.clip();
+
+        c.strokeStyle='rgba(30,25,60,0.6)';c.lineWidth=1.5;
+        var hatchN=3;
+        for(var hi=0;hi<hatchN;hi++){
+          var ha=a1+(a2-a1)*(hi+0.5)/hatchN;
+          var hx=cx+Math.cos(ha)*rr, hy=cy+Math.sin(ha)*rr;
+          c.beginPath();
+          c.moveTo(hx-Math.cos(tiltAngle)*thick,hy-Math.sin(tiltAngle)*thick);
+          c.lineTo(hx+Math.cos(tiltAngle)*thick,hy+Math.sin(tiltAngle)*thick);
+          c.stroke();
+        }
+        c.restore();
+      }
+    }
+  }
+  // 중심
+  c.beginPath();c.arc(cx,cy,r/numRings*0.6,0,Math.PI*2);
+  c.fillStyle='#c4b5fd';c.fill();
+}
+function drawScintillating(c,W,H){
+  var gap=44,dot=4,ox=20,oy=20;
+  c.fillStyle='#181830';c.fillRect(0,0,W,H);
+  var rows=Math.floor((H-oy*2)/gap)+1;
+  var cols2=Math.floor((W-ox*2)/gap)+1;
+  for(var r=0;r<rows;r++){
+    for(var cc=0;cc<cols2;cc++){
+      var x=ox+cc*gap,y=oy+r*gap;
+      c.fillStyle='#a0a0c8';
+      c.fillRect(x-dot,y-dot,dot*2,dot*2);
+    }
+  }
+  for(var r=0;r<rows-1;r++){
+    for(var cc=0;cc<cols2-1;cc++){
+      var x=ox+cc*gap+gap/2,y=oy+r*gap+gap/2;
+      c.fillStyle='#e8e4ff';
+      c.fillRect(x-18,y-18,36,36);
+    }
+  }
+  c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+  c.fillText('교차점을 직접 보면 점이 사라집니다',W/2,H-8);
+}
+function drawNecker(c,cx,cy,s){
+  // 네커 큐브: 투명한 정육면체의 등각투영
+  // 앞면이 좌하인지 우상인지 인식이 번갈아 바뀜
+  var d=s*0.55; // 큐브 반크기
+  var ox=s*0.28, oy=s*0.16; // 등각투영 offset
+
+  // 8개 꼭짓점 (front face 4개, back face 4개)
+  // front face (뷰어 쪽): 좌상, 우상, 우하, 좌하
+  var f=[[cx-d,cy-d],[cx+d,cy-d],[cx+d,cy+d],[cx-d,cy+d]];
+  // back face: front face를 (ox, -oy) 이동
+  var b=[[cx-d+ox,cy-d-oy],[cx+d+ox,cy-d-oy],[cx+d+ox,cy+d-oy],[cx-d+ox,cy+d-oy]];
+
+  function line(p1,p2,col,lw,dash){
+    c.save();
+    if(dash)c.setLineDash(dash);
+    c.beginPath();c.moveTo(p1[0],p1[1]);c.lineTo(p2[0],p2[1]);
+    c.strokeStyle=col;c.lineWidth=lw;c.stroke();
+    c.restore();
+  }
+  function dot(p,col,r){
+    c.beginPath();c.arc(p[0],p[1],r,0,Math.PI*2);
+    c.fillStyle=col;c.fill();
+  }
+
+  var LC='#a78bfa', BC='rgba(167,139,250,0.35)'; // 앞선/뒷선 색
+
+  // 뒷면 (점선)
+  line(b[0],b[1],BC,1.5,[5,3]);
+  line(b[1],b[2],BC,1.5,[5,3]);
+  line(b[2],b[3],BC,1.5,[5,3]);
+  line(b[3],b[0],BC,1.5,[5,3]);
+
+  // 뒷면→앞면 연결선 (점선)
+  line(b[0],f[0],BC,1.5,[5,3]);
+  line(b[1],f[1],BC,1.5,[5,3]);
+  line(b[2],f[2],BC,1.5,[5,3]);
+  line(b[3],f[3],BC,1.5,[5,3]);
+
+  // 앞면 (실선)
+  line(f[0],f[1],LC,2);
+  line(f[1],f[2],LC,2);
+  line(f[2],f[3],LC,2);
+  line(f[3],f[0],LC,2);
+
+  // 꼭짓점 강조
+  f.forEach(function(p){dot(p,'#c4b5fd',3);});
+  b.forEach(function(p){dot(p,'rgba(167,139,250,0.5)',2);});
+
+  // 모호성 힌트: 두 면에 라벨
+  c.fillStyle='rgba(244,114,182,0.7)';c.font='bold 10px monospace';c.textAlign='center';
+  c.fillText('앞?',(f[0][0]+f[2][0])/2,(f[0][1]+f[2][1])/2);
+  c.fillStyle='rgba(96,165,250,0.7)';
+  c.fillText('앞?',(b[0][0]+b[2][0])/2,(b[0][1]+b[2][1])/2);
+
+  c.fillStyle='rgba(90,88,112,0.8)';c.font='11px sans-serif';c.textAlign='center';
+  c.fillText('어느 면이 앞쪽인가요?',cx,cy+s+16);
+}
+function drawPenrose(c,cx,cy,s){
+  // ═══ 펜로즈 불가능 삼각형 — 완전 재구현 ═══
+  // 참고: 실제 펜로즈 삼각형은 각 꼭짓점에서 빔의 앞뒤가 뒤바뀌어
+  // 전체적으로는 불가능하지만 국소적으로는 말이 되는 구조
+  var k=s/100;
+  var R=80*k, T=18*k;
+  var h=Math.sqrt(3)/2;
+
+  // 정삼각형 꼭짓점 (A=상단, B=좌하, C=우하)
+  var Ax=cx,         Ay=cy-R;
+  var Bx=cx-R*h,     By=cy+R/2;
+  var Cx=cx+R*h,     Cy=cy+R/2;
+
+  function unit(x1,y1,x2,y2){
+    var l=Math.hypot(x2-x1,y2-y1);
+    return[(x2-x1)/l,(y2-y1)/l];
+  }
+  function np(d){return[-d[1],d[0]];} // 왼쪽 수직
+  function pt(x,y,n,t){return[x+n[0]*t,y+n[1]*t];}
+  function quad(p0,p1,p2,p3,col){
+    c.beginPath();
+    c.moveTo(p0[0],p0[1]);c.lineTo(p1[0],p1[1]);
+    c.lineTo(p2[0],p2[1]);c.lineTo(p3[0],p3[1]);
+    c.closePath();c.fillStyle=col;c.fill();
+  }
+  function tri(p0,p1,p2,col){
+    c.beginPath();
+    c.moveTo(p0[0],p0[1]);c.lineTo(p1[0],p1[1]);c.lineTo(p2[0],p2[1]);
+    c.closePath();c.fillStyle=col;c.fill();
+  }
+  function edge(p0,p1,col,w){
+    c.beginPath();c.moveTo(p0[0],p0[1]);c.lineTo(p1[0],p1[1]);
+    c.strokeStyle=col;c.lineWidth=w;c.stroke();
+  }
+
+  // 각 빔의 방향 벡터와 두께 방향 벡터
+  var dAB=unit(Ax,Ay,Bx,By), nAB=np(dAB); // A→B: 왼쪽 빔
+  var dBC=unit(Bx,By,Cx,Cy), nBC=np(dBC); // B→C: 아래 빔
+  var dCA=unit(Cx,Cy,Ax,Ay), nCA=np(dCA); // C→A: 오른쪽 빔
+
+  // 빔의 4개 꼭짓점 (outer=바깥, inner=삼각형 안쪽)
+  // AB 빔: outer가 왼쪽, inner가 오른쪽
+  var Ao=pt(Ax,Ay,nAB,T), Bo_ab=pt(Bx,By,nAB,T);   // outer edge
+  var Ai=pt(Ax,Ay,nAB,-T), Bi_ab=pt(Bx,By,nAB,-T); // inner edge
+
+  // BC 빔: outer가 아래쪽
+  var Bo_bc=pt(Bx,By,nBC,T), Co_bc=pt(Cx,Cy,nBC,T);
+  var Bi_bc=pt(Bx,By,nBC,-T), Ci_bc=pt(Cx,Cy,nBC,-T);
+
+  // CA 빔: outer가 오른쪽
+  var Co_ca=pt(Cx,Cy,nCA,T), Ao_ca=pt(Ax,Ay,nCA,T);
+  var Ci_ca=pt(Cx,Cy,nCA,-T), Ai_ca=pt(Ax,Ay,nCA,-T);
+
+  // 색상: 위면(밝음), 왼면(중간), 오른/아래면(어두움)
+  var L='#e2d9f3', M='#7c3aed', D='#1a0a3a';
+  var E='rgba(255,255,255,0.5)';
+
+  // ── 1. 세 빔의 기본 면 그리기 ──
+  // AB 빔(왼쪽): 앞면=밝음, 바깥면=어두움
+  quad(Ao, Bo_ab, Bi_ab, Ai, L);                     // 앞면(두께면, 밝음)
+  quad([Ax,Ay],[Bx,By],Bo_ab,Ao, D);                 // 왼쪽 외곽면(어두움)
+
+  // BC 빔(아래): 아랫면=중간, 외곽=어두움
+  quad(Bo_bc, Co_bc, Ci_bc, Bi_bc, M);               // 아래 두께면
+  quad([Bx,By],[Cx,Cy],Co_bc,Bo_bc, D);              // 아래 외곽면
+
+  // CA 빔(오른쪽): 앞면=중간, 외곽=어두움
+  quad(Co_ca, Ao_ca, Ai_ca, Ci_ca, M);               // 오른쪽 두께면
+  quad([Cx,Cy],[Ax,Ay],Ao_ca,Co_ca, D);              // 오른쪽 외곽면
+
+  // ── 2. 꼭짓점 불가능 연결 (이게 핵심!) ──
+  // 상단 꼭짓점 A:
+  //   CA빔이 AB빔 앞으로 통과하는 것처럼 보여야 함
+  //   → CA빔의 A쪽 끝단면을 AB빔의 Ao/Ai 위에 덮어 그림
+  tri(Ao_ca, Ai_ca, [Ax,Ay], L);         // CA 끝 단면(CA의 앞면 색)
+  tri(Ao_ca, [Ax,Ay], Ao, M);            // CA→AB 접합 부분
+
+  // 좌하단 꼭짓점 B:
+  //   AB빔이 BC빔 아래에서 나오는 것처럼
+  //   → BC빔의 B쪽 시작단면을 AB빔의 Bo_ab 위에 덮어 그림
+  tri(Bo_bc, Bi_bc, [Bx,By], L);         // BC 시작 단면
+  tri([Bx,By], Bo_bc, Bi_ab, M);         // BC→AB 접합
+
+  // 우하단 꼭짓점 C:
+  //   BC빔이 CA빔 위에 올라가는 것처럼
+  //   → BC빔의 C쪽 끝단면을 CA빔의 Co_ca 위에 덮어 그림
+  tri(Co_bc, Ci_bc, [Cx,Cy], M);         // BC 끝 단면
+  tri([Cx,Cy], Co_ca, Co_bc, D);         // BC→CA 접합
+
+  // ── 3. 윤곽선 ──
+  c.lineWidth=1.3;
+  [[Ao,Bo_ab],[Ai,Bi_ab],
+   [Bo_bc,Co_bc],[Bi_bc,Ci_bc],
+   [Co_ca,Ao_ca],[Ci_ca,Ai_ca]].forEach(function(e){edge(e[0],e[1],E,1.3);});
+}
+function drawWagonWheel(c,cx,cy,r){
+  c.strokeStyle='#a78bfa';c.lineWidth=2;
+  c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+  c.beginPath();c.arc(cx,cy,r*0.15,0,Math.PI*2);c.stroke();
+  var spokes=12;
+  for(var i=0;i<spokes;i++){
+    var a=i/spokes*Math.PI*2;
+    var t=Date.now()*0.001;
+    var a2=a+t*2;
+    c.strokeStyle='rgba(167,139,250,'+(0.4+0.4*Math.sin(i*0.8))+')';
+    c.beginPath();c.moveTo(cx+Math.cos(a2)*r*0.15,cy+Math.sin(a2)*r*0.15);
+    c.lineTo(cx+Math.cos(a2)*r*0.95,cy+Math.sin(a2)*r*0.95);c.stroke();
+  }
+  c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+  c.fillText('어느 방향으로 도나요?',cx,cy+r+18);
+  // Animate
+  if(!window._wwFrame){window._wwFrame=requestAnimationFrame(function loop(){
+    if(document.getElementById('s-puzzle').classList.contains('active')&&
+       document.getElementById('pz-vis').querySelector('canvas')){
+      c.fillStyle='#080818';c.fillRect(0,0,c.canvas.width,c.canvas.height);
+      c.strokeStyle='#a78bfa';c.lineWidth=2;
+      c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+      c.beginPath();c.arc(cx,cy,r*0.15,0,Math.PI*2);c.stroke();
+      var spokes=12;var t2=Date.now()*0.0012;
+      for(var i=0;i<spokes;i++){
+        var a3=i/spokes*Math.PI*2+t2;
+        c.strokeStyle='rgba(167,139,250,'+(0.4+0.4*Math.sin(i*0.8))+')';
+        c.beginPath();c.moveTo(cx+Math.cos(a3)*r*0.15,cy+Math.sin(a3)*r*0.15);
+        c.lineTo(cx+Math.cos(a3)*r*0.95,cy+Math.sin(a3)*r*0.95);c.stroke();
+      }
+      c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+      c.fillText('어느 방향으로 도나요?',cx,cy+r+18);
+      window._wwFrame=requestAnimationFrame(loop);
+    } else {window._wwFrame=null;}
+  });}
+}
+function drawHybridFace(c,cx,cy,r){
+  // Low freq: smile (blurred)
+  c.save();c.filter='blur(8px)';
+  c.strokeStyle='rgba(248,113,113,.8)';c.lineWidth=4;
+  c.beginPath();c.arc(cx,cy,r*0.5,0.2,Math.PI-0.2);c.stroke();
+  c.beginPath();c.arc(cx-r*0.25,cy-r*0.15,8,0,Math.PI*2);c.fillStyle='rgba(248,113,113,.8)';c.fill();
+  c.beginPath();c.arc(cx+r*0.25,cy-r*0.15,8,0,Math.PI*2);c.fill();
+  c.restore();
+  // High freq: frown (sharp)
+  c.strokeStyle='rgba(167,139,250,.9)';c.lineWidth=2;
+  c.beginPath();c.arc(cx,cy+r*0.2,r*0.4,Math.PI+0.3,-0.3);c.stroke();
+  c.beginPath();c.arc(cx-r*0.25,cy-r*0.1,5,0,Math.PI*2);c.fillStyle='rgba(167,139,250,.9)';c.fill();
+  c.beginPath();c.arc(cx+r*0.25,cy-r*0.1,5,0,Math.PI*2);c.fill();
+  // Face outline
+  c.strokeStyle='rgba(200,196,240,.3)';c.lineWidth=1;
+  c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+}
+function drawAmesRoom(c,W,H){
+  // 에임스 방 착시: 사다리꼴 방이 직사각형처럼 보여 크기를 왜곡
+  // 핵심: 왼쪽 구석은 실제로 더 멀고 높고, 오른쪽은 가깝고 낮음
+  // 하지만 관찰자는 직사각형 방으로 인식해서 오른쪽 사람이 거대해 보임
+  c.fillStyle='#0e0c1e';c.fillRect(0,0,W,H);
+
+  // 방의 주요 꼭짓점 (에임스 방 특유의 왜곡)
+  // 소실점 (화면 중앙 약간 오른쪽)
+  var vpx=W*0.52, vpy=H*0.42;
+
+  // 뒷벽 꼭짓점 (4개) — 사다리꼴
+  var bTL=[W*0.20, H*0.12]; // 뒷벽 좌상 (실제로 더 높고 멀다)
+  var bTR=[W*0.78, H*0.28]; // 뒷벽 우상
+  var bBR=[W*0.78, H*0.82]; // 뒷벽 우하
+  var bBL=[W*0.20, H*0.88]; // 뒷벽 좌하 (실제로 더 낮고 멀다)
+
+  // ── 바닥 ──
+  var floorGrad=c.createLinearGradient(0,H*0.8,0,H);
+  floorGrad.addColorStop(0,'#1e1a3a');floorGrad.addColorStop(1,'#2a2648');
+  c.fillStyle=floorGrad;
+  c.beginPath();c.moveTo(0,H);c.lineTo(bBL[0],bBL[1]);
+  c.lineTo(bBR[0],bBR[1]);c.lineTo(W,H);c.closePath();c.fill();
+
+  // 바닥 타일 격자
+  c.strokeStyle='rgba(80,76,140,0.4)';c.lineWidth=1;
+  for(var i=1;i<=6;i++){
+    var t=i/7;
+    // 전→후 방향 선
+    var fBotX=t*W, fTopX=bBL[0]+t*(bBR[0]-bBL[0]);
+    var fTopY=bBL[1]+t*(bBR[1]-bBL[1]);
+    c.beginPath();c.moveTo(fBotX,H);c.lineTo(fTopX,fTopY);c.stroke();
+  }
+  for(var j=1;j<=4;j++){
+    var tj=j/5;
+    var lx2=bBL[0]+(0-bBL[0])*0+tj*(bBR[0]-bBL[0])*(W/W);
+    c.beginPath();
+    c.moveTo(bBL[0]+tj*(bBR[0]-bBL[0]), bBL[1]+tj*(bBR[1]-bBL[1]));
+    c.lineTo(tj*W, H); c.stroke();
+  }
+
+  // ── 천장 ──
+  var ceilGrad=c.createLinearGradient(0,0,0,H*0.3);
+  ceilGrad.addColorStop(0,'#0a0818');ceilGrad.addColorStop(1,'#151228');
+  c.fillStyle=ceilGrad;
+  c.beginPath();c.moveTo(0,0);c.lineTo(bTL[0],bTL[1]);
+  c.lineTo(bTR[0],bTR[1]);c.lineTo(W,0);c.closePath();c.fill();
+
+  // ── 뒷벽 ──
+  var wallGrad=c.createLinearGradient(bTL[0],0,bTR[0],0);
+  wallGrad.addColorStop(0,'#1a1838');wallGrad.addColorStop(0.5,'#22203e');
+  wallGrad.addColorStop(1,'#1e1c3c');
+  c.fillStyle=wallGrad;
+  c.beginPath();c.moveTo(bTL[0],bTL[1]);c.lineTo(bTR[0],bTR[1]);
+  c.lineTo(bBR[0],bBR[1]);c.lineTo(bBL[0],bBL[1]);c.closePath();c.fill();
+
+  // 뒷벽 창문 힌트 (원근감 강화)
+  c.strokeStyle='rgba(120,116,200,0.25)';c.lineWidth=1;
+  for(var wi=1;wi<=3;wi++){
+    var wt=wi/4;
+    var wx=bTL[0]+wt*(bTR[0]-bTL[0]);
+    var wyT=bTL[1]+wt*(bTR[1]-bTL[1]);
+    var wyB=bBL[1]+wt*(bBR[1]-bBL[1]);
+    c.beginPath();c.moveTo(wx,wyT);c.lineTo(wx,wyB);c.stroke();
+  }
+  for(var hi=1;hi<=3;hi++){
+    var ht=hi/4;
+    c.beginPath();
+    c.moveTo(bTL[0],bTL[1]+ht*(bBL[1]-bTL[1]));
+    c.lineTo(bTR[0],bTR[1]+ht*(bBR[1]-bTR[1]));
+    c.stroke();
+  }
+
+  // ── 왼쪽 벽 (어두움) ──
+  c.fillStyle='#110f22';
+  c.beginPath();c.moveTo(0,0);c.lineTo(bTL[0],bTL[1]);
+  c.lineTo(bBL[0],bBL[1]);c.lineTo(0,H);c.closePath();c.fill();
+
+  // ── 오른쪽 벽 (약간 밝음) ──
+  c.fillStyle='#1c1a34';
+  c.beginPath();c.moveTo(W,0);c.lineTo(bTR[0],bTR[1]);
+  c.lineTo(bBR[0],bBR[1]);c.lineTo(W,H);c.closePath();c.fill();
+
+  // ──── 인물 A (왼쪽 구석 — 실제로 더 멀고 높음, 작아 보임) ────
+  var Apx=bBL[0]+18, Apy=bBL[1];
+  var Ah=H*0.36; // 실제 화면 픽셀 키
+  function drawPerson(px,py,ph,headCol,bodyCol,lbl){
+    // 몸
+    var bw=ph*0.22;
+    c.fillStyle=bodyCol;
+    c.beginPath();
+    c.moveTo(px-bw,py);c.lineTo(px+bw,py);
+    c.lineTo(px+bw*0.7,py-ph*0.6);c.lineTo(px-bw*0.7,py-ph*0.6);
+    c.closePath();c.fill();
+    // 목
+    c.fillStyle=headCol;
+    c.fillRect(px-bw*0.2,py-ph*0.7,bw*0.4,ph*0.12);
+    // 머리
+    var hr=ph*0.13;
+    c.beginPath();c.arc(px,py-ph*0.7-hr,hr,0,Math.PI*2);
+    c.fillStyle=headCol;c.fill();
+    // 눈
+    c.fillStyle='rgba(10,8,30,0.8)';
+    c.beginPath();c.arc(px-hr*0.35,py-ph*0.7-hr*1.1,hr*0.18,0,Math.PI*2);c.fill();
+    c.beginPath();c.arc(px+hr*0.35,py-ph*0.7-hr*1.1,hr*0.18,0,Math.PI*2);c.fill();
+    // 라벨
+    c.fillStyle=headCol;c.font='bold 11px monospace';c.textAlign='center';
+    c.fillText(lbl,px,py+14);
+  }
+
+  drawPerson(Apx, Apy, Ah, '#c4b5fd','#7c3aed','A');
+
+  // ──── 인물 B (오른쪽 구석 — 가깝고 낮음, 거대해 보임) ────
+  // 실제 화면 픽셀 키는 A와 동일하지만 방이 더 낮아 보여 거대해 보임
+  var Bpx=bBR[0]-18, Bpy=bBR[1];
+  var Bh=H*0.36; // 동일한 픽셀 키!
+
+  drawPerson(Bpx, Bpy, Bh, '#f9a8d4','#ec4899','B');
+
+  // 설명
+  c.fillStyle='rgba(90,88,112,0.75)';c.font='10px sans-serif';c.textAlign='center';
+  c.fillText('A와 B의 실제 키는 같습니다',W/2,H-4);
+}
+function drawInvertedFace(c,cx,cy,r){
+  // 뒤집힌 얼굴 착시 (Margaret Thatcher effect)
+  // 얼굴 전체를 거꾸로 그리되, 눈과 입만 정방향으로 배치
+  // → 거꾸로 볼 때는 자연스러워 보이지만, 바로 세우면 기괴함
+  c.save();
+  // 전체 캔버스를 cx,cy 중심으로 180도 회전 (얼굴 전체 뒤집기)
+  c.translate(cx, cy);
+  c.rotate(Math.PI);
+  c.translate(-cx, -cy);
+
+  // 얼굴 윤곽 (뒤집혀 있음)
+  c.strokeStyle='rgba(200,196,240,0.7)';c.lineWidth=2;
+  c.beginPath();c.ellipse(cx,cy,r*0.62,r*0.82,0,0,Math.PI*2);c.stroke();
+  // 피부 fill
+  c.fillStyle='rgba(30,25,60,0.6)';c.fill();
+
+  // 머리카락 (위쪽)
+  c.fillStyle='#2d2050';
+  c.beginPath();c.ellipse(cx,cy-r*0.72,r*0.65,r*0.28,0,Math.PI,0);c.fill();
+
+  // 코
+  c.strokeStyle='rgba(167,139,250,0.6)';c.lineWidth=1.5;
+  c.beginPath();
+  c.moveTo(cx-r*0.08,cy-r*0.12);
+  c.lineTo(cx-r*0.14,cy+r*0.15);
+  c.lineTo(cx+r*0.14,cy+r*0.15);
+  c.lineTo(cx+r*0.08,cy-r*0.12);
+  c.stroke();
+
+  // 이제 눈과 입을 정방향으로 (거꾸로 뒤집어 놓기 = 다시 rotate -PI)
+  c.save();
+  c.translate(cx,cy);c.rotate(-Math.PI);c.translate(-cx,-cy);
+
+  // 눈 (정방향으로 배치 — 원래 위치)
+  // 눈 흰자
+  c.fillStyle='#e8e4ff';
+  c.beginPath();c.ellipse(cx-r*0.26,cy-r*0.18,r*0.16,r*0.10,0,0,Math.PI*2);c.fill();
+  c.beginPath();c.ellipse(cx+r*0.26,cy-r*0.18,r*0.16,r*0.10,0,0,Math.PI*2);c.fill();
+  // 눈동자
+  c.fillStyle='#1a1040';
+  c.beginPath();c.arc(cx-r*0.26,cy-r*0.18,r*0.07,0,Math.PI*2);c.fill();
+  c.beginPath();c.arc(cx+r*0.26,cy-r*0.18,r*0.07,0,Math.PI*2);c.fill();
+  // 눈썹 (정방향)
+  c.strokeStyle='#a78bfa';c.lineWidth=2;
+  c.beginPath();c.moveTo(cx-r*0.38,cy-r*0.30);c.quadraticCurveTo(cx-r*0.26,cy-r*0.34,cx-r*0.14,cy-r*0.30);c.stroke();
+  c.beginPath();c.moveTo(cx+r*0.14,cy-r*0.30);c.quadraticCurveTo(cx+r*0.26,cy-r*0.34,cx+r*0.38,cy-r*0.30);c.stroke();
+
+  // 입 (정방향 — 활짝 웃는 모양)
+  c.strokeStyle='#f472b6';c.lineWidth=2.5;
+  c.beginPath();c.arc(cx,cy+r*0.22,r*0.25,0.15,Math.PI-0.15);c.stroke();
+  // 입술 라인
+  c.beginPath();c.moveTo(cx-r*0.25,cy+r*0.22);c.lineTo(cx+r*0.25,cy+r*0.22);
+  c.strokeStyle='rgba(244,114,182,0.4)';c.lineWidth=1;c.stroke();
+  c.restore(); // 눈/입 정방향 복원
+
+  c.restore(); // 전체 뒤집기 복원
+
+  // 라벨
+  c.fillStyle='rgba(90,88,112,0.8)';c.font='10px sans-serif';c.textAlign='center';
+  c.fillText('↓ 거꾸로 뒤집으면? ↓',cx,cy+r+16);
+}
+function drawImpossibleMotion(c,W,H){
+  // Two balls that appear to pass through each other
+  var t=Date.now()*0.001;
+  var y=H/2;
+  var x1=(W*0.5+Math.cos(t)*W*0.35);
+  var x2=(W*0.5-Math.cos(t)*W*0.35);
+  // bar
+  c.fillStyle='#2a2848';c.fillRect(W*0.5-4,H*0.2,8,H*0.6);
+  // balls
+  c.beginPath();c.arc(x1,y,20,0,Math.PI*2);
+  var g1=c.createRadialGradient(x1-5,y-5,2,x1,y,20);
+  g1.addColorStop(0,'#c8c4f0');g1.addColorStop(1,'#8b7cf8');
+  c.fillStyle=g1;c.fill();
+  c.beginPath();c.arc(x2,y,20,0,Math.PI*2);
+  var g2=c.createRadialGradient(x2-5,y-5,2,x2,y,20);
+  g2.addColorStop(0,'#fcd0e0');g2.addColorStop(1,'#e07ca0');
+  c.fillStyle=g2;c.fill();
+  c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+  // Animate
+  if(!window._imFrame){window._imFrame=requestAnimationFrame(function loop(){
+    if(document.getElementById('s-puzzle').classList.contains('active')&&
+       document.getElementById('pz-vis').querySelector('canvas')){
+      c.fillStyle='#080818';c.fillRect(0,0,W,H);
+      var t2=Date.now()*0.001;var y2=H/2;
+      var nx1=(W*0.5+Math.cos(t2)*W*0.35);var nx2=(W*0.5-Math.cos(t2)*W*0.35);
+      c.fillStyle='#2a2848';c.fillRect(W*0.5-4,H*0.2,8,H*0.6);
+      c.beginPath();c.arc(nx1,y2,20,0,Math.PI*2);
+      var ng1=c.createRadialGradient(nx1-5,y2-5,2,nx1,y2,20);
+      ng1.addColorStop(0,'#c8c4f0');ng1.addColorStop(1,'#8b7cf8');c.fillStyle=ng1;c.fill();
+      c.beginPath();c.arc(nx2,y2,20,0,Math.PI*2);
+      var ng2=c.createRadialGradient(nx2-5,y2-5,2,nx2,y2,20);
+      ng2.addColorStop(0,'#fcd0e0');ng2.addColorStop(1,'#e07ca0');c.fillStyle=ng2;c.fill();
+      c.fillStyle='#3a385e';c.font='11px sans-serif';c.textAlign='center';
+      c.fillText('각 공의 궤적을 따로 추적해보세요',W/2,H-8);
+      window._imFrame=requestAnimationFrame(loop);
+    } else {window._imFrame=null;}
+  });}
+}
+
+// ================================================================
+// PUZZLE ENGINE
+// ================================================================
+
+function startPuzzle(){
+  window._wwFrame=null;window._imFrame=null;
+  clearInterval(timerInt);puzzleDone=false;
+  var day=DAYS[dayIdx];var pat=day.patients[patientIdx];var pz=pat.puzzle;
+  document.getElementById('pz-badge').textContent=pat.badge+' · 착시 검사';
+  document.getElementById('pz-title').textContent=pz.title;
+  document.getElementById('pz-diff').textContent='난이도 '+pz.diff+'/7';
+  document.getElementById('pz-desc').textContent=pz.desc;
+  document.getElementById('pz-q').textContent=pz.q;
+  document.getElementById('pz-fb').textContent='';document.getElementById('pz-fb').className='';
+  document.getElementById('hint-txt').style.display='none';
+  document.getElementById('hint-txt').textContent=pz.hint;
+  renderPuzzleVis(pz);
+  var wrap=document.getElementById('pz-btns');wrap.innerHTML='';
+  pz.choices.forEach(function(ch2){
+    var b=document.createElement('button');b.className='cb';b.textContent=ch2;
+    b.addEventListener('click',function(){answerPuzzle(ch2,b);});
     wrap.appendChild(b);
   });
+  show('s-puzzle');
+  startTimer(pz.timeSec);
 }
-
 function answerPuzzle(choice,btn){
-  if(puzzleOk)return;
-  puzzleOk=true;
-  clearInterval(timerInt);
-  const pz=STORY[chIdx].puzzle;
-  const ok=choice===pz.correct;
-  const fb=document.getElementById('pz-fb');
-  if(ok){
-    btn.classList.add('ok2');
-    fb.textContent='✅ '+pz.okTx;fb.className='ok';
-  } else {
-    btn.classList.add('ng');
-    fb.textContent='❌ '+pz.ngTx;fb.className='no';
-    loseSanity(8);wrongCount++;
-    document.querySelectorAll('.cb').forEach(b=>{if(b.textContent===pz.correct)b.classList.add('ok2');});
+  if(puzzleDone)return;puzzleDone=true;clearInterval(timerInt);
+  var pat=DAYS[dayIdx].patients[patientIdx];var pz=pat.puzzle;
+  var ok=choice===pz.correct;
+  var fb=document.getElementById('pz-fb');
+  if(ok){btn.classList.add('ok2');fb.textContent='✅ '+pz.okTx;fb.className='ok';}
+  else{
+    btn.classList.add('ng');fb.textContent='❌ '+pz.ngTx;fb.className='no';
+    loseSanity(8);wrongTotal++;whiteFlash();
+    document.querySelectorAll('.cb').forEach(function(b){if(b.textContent===pz.correct)b.classList.add('ok2');});
   }
-  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
-
-  const ch=STORY[chIdx];
-  if(ch.isChoice){
-    setTimeout(()=>showChoiceScreen(ch),2000);
-  } else {
-    setTimeout(()=>{dIdx=0;dMode='post';show('s-dialog');renderDialog();},2000);
-  }
+  document.querySelectorAll('.cb').forEach(function(b){b.disabled=true;});
+  setTimeout(function(){dIdx=0;dMode='post';show('s-dialog');renderDialog();},2200);
 }
-
 function toggleHint(){
-  const h=document.getElementById('hint-txt');
+  var h=document.getElementById('hint-txt');
   h.style.display=h.style.display==='none'?'block':'none';
-  loseSanity(3);
+  loseSanity(5);
 }
 
-// ================================================================
-//  TIMER
-// ================================================================
 function startTimer(sec){
-  timeLeft=sec;
-  const bar=document.getElementById('timer-bar');
-  bar.style.width='100%';
-  bar.style.background='var(--acc)';
+  timeLeft=sec;var bar=document.getElementById('timer-fill');
+  bar.style.width='100%';bar.style.background='var(--acc)';
   clearInterval(timerInt);
-  timerInt=setInterval(()=>{
-    timeLeft-=.1;
-    const pct=Math.max(0,timeLeft/sec*100);
+  timerInt=setInterval(function(){
+    timeLeft-=0.1;var pct=Math.max(0,timeLeft/sec*100);
     bar.style.width=pct+'%';
     if(pct<30)bar.style.background='#f87171';
     else if(pct<60)bar.style.background='#fbbf24';
-    if(timeLeft<=0){clearInterval(timerInt);if(!puzzleOk)timeUp();}
+    if(timeLeft<=0){clearInterval(timerInt);if(!puzzleDone)timeUp();}
   },100);
 }
 
 function timeUp(){
-  puzzleOk=true;
-  const pz=STORY[chIdx].puzzle;
-  const fb=document.getElementById('pz-fb');
-  fb.textContent='⏰ '+pz.ngTx;fb.className='no';
-  loseSanity(12);wrongCount++;
-  document.querySelectorAll('.cb').forEach(b=>{b.disabled=true;if(b.textContent===pz.correct)b.classList.add('ok2');});
-  const ch=STORY[chIdx];
-  if(ch.isChoice){setTimeout(()=>showChoiceScreen(ch),2000);}
-  else{setTimeout(()=>{dIdx=0;dMode='post';show('s-dialog');renderDialog();},2000);}
+  puzzleDone=true;var pat=DAYS[dayIdx].patients[patientIdx];var pz=pat.puzzle;
+  document.getElementById('pz-fb').textContent='⏰ '+pz.ngTx;
+  document.getElementById('pz-fb').className='no';
+  loseSanity(12);wrongTotal++;whiteFlash();
+  document.querySelectorAll('.cb').forEach(function(b){b.disabled=true;if(b.textContent===pz.correct)b.classList.add('ok2');});
+  setTimeout(function(){dIdx=0;dMode='post';show('s-dialog');renderDialog();},2200);
 }
 
 // ================================================================
-//  CHOICE SCREEN
-// ================================================================
-function showChoiceScreen(ch){
-  document.getElementById('choice-title').textContent=ch.choiceTitle;
-  document.getElementById('choice-desc').textContent=ch.choiceDesc;
-  const wrap=document.getElementById('choices-wrap');
-  wrap.innerHTML='';
-  ch.choices.forEach(opt=>{
-    const card=document.createElement('div');
-    card.className='choice-card';
-    card.innerHTML='<div class="ct">'+opt.label+'</div><div class="cd">'+opt.desc+'</div>';
-    card.addEventListener('click',()=>{
-      choiceMade=opt.key;
-      // play post dialogs first (if any) then show ending
-      dIdx=0;dMode='post';show('s-dialog');renderDialog();
-    });
-    wrap.appendChild(card);
+
+// ── 설정 ──
+function showSettings(){
+  show('s-settings');
+  // highlight current speed
+  var spd = saveData.textSpeed || 'normal';
+  ['slow','normal','fast'].forEach(function(s){
+    var btn = document.getElementById('spd-'+s);
+    if(btn) btn.classList.toggle('active', s===spd);
   });
-  show('s-choice');
 }
 
+var TEXT_SPEED_MAP = {slow:60, normal:30, fast:12};
+function setTextSpeed(spd){
+  saveData.textSpeed = spd;
+  writeSave();
+  ['slow','normal','fast'].forEach(function(s){
+    var btn = document.getElementById('spd-'+s);
+    if(btn) btn.classList.toggle('active', s===spd);
+  });
+}
+
+// 회차 기억 시스템 — localStorage로 이전 엔딩 저장
 // ================================================================
-//  CHAPTER ADVANCE — override renderDialog's auto-advance
-// ================================================================
-const _origRenderDialog = renderDialog;
-// Patch post-dialog advance for final chapter
-function renderDialog(){
-  const ch=STORY[chIdx];
-  const lines=dMode==='pre'?ch.pre:ch.post;
-  if(dIdx>=lines.length){
-    if(dMode==='pre'){
-      startPuzzle();
-    } else {
-      // if this was the choice chapter's post, show ending
-      if(ch.isChoice && choiceMade){
-        showEnding(choiceMade);
-        return;
-      }
-      chIdx++;
-      if(chIdx>=STORY.length){showEnding('deny');return;}
-      beginChapter();
-    }
-    return;
-  }
-  const line=lines[dIdx];
-  document.getElementById('d-speaker').textContent=line.sp;
-  typeText(line.tx);
-  if(sanity<35){
-    document.getElementById('d-text-in').classList.add('glitch');
+var prevEnding = null; // 'deny' | 'accept' | 'collapse' | null
+
+
+// ── 엔딩 자동 계산 ──
+function calcEnding(){
+  var score=endScore*2+(sanity-50)/10-wrongTotal;
+  var key;
+  if(score>=4){key='deny';}
+  else if(score<=-4){key='collapse';}
+  else{key='accept';}
+  clearProgress();
+  unlockEnding(key);
+  var trans=document.getElementById('day-trans');
+  trans.style.display='block';trans.style.transition='opacity .5s';trans.style.opacity='1';
+  setTimeout(function(){
+    showEnding(key,false);
+    setTimeout(function(){
+      trans.style.opacity='0';
+      setTimeout(function(){trans.style.display='none';},500);
+    },300);
+  },600);
+}
+
+function showEnding(key,fromGallery){
+  var e=ENDINGS[key]||ENDINGS.deny;
+  document.getElementById('e-tag').textContent=e.tag;
+  document.getElementById('e-art').innerHTML=e.art;
+  document.getElementById('e-title').textContent=e.title;
+  document.getElementById('e-body').style.borderColor=e.color;
+  document.getElementById('e-body').innerHTML=e.body.replace(/\n/g,'<br>');
+  var summaryEl=document.getElementById('e-summary');
+  if(!fromGallery){
+    var advLog=window._adviceLog||[];
+    var denyCnt=0,collapseCnt=0,acceptCnt=0;
+    advLog.forEach(function(k){if(k==='deny')denyCnt++;else if(k==='collapse')collapseCnt++;else acceptCnt++;});
+    var sanityLabel=sanity>=70?'안정적':sanity>=40?'흔들림':'붕괴 직전';
+    summaryEl.innerHTML='<div style="margin-top:16px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;font-size:.72rem;color:#3a385e;line-height:2;text-align:left;max-width:430px;">'+
+      '<div style="color:#5a5870;letter-spacing:2px;font-size:.6rem;margin-bottom:8px;">— 이번 회차 기록 —</div>'+
+      '<div>정신력 최종: <span style="color:'+e.color+'">'+sanity+'%</span> ('+sanityLabel+')</div>'+
+      '<div>오답 횟수: <span style="color:'+(wrongTotal>=4?'#f87171':'#6a6890')+'">'+wrongTotal+'회</span></div>'+
+      (advLog.length?'<div>조언 성향: <span style="color:#8b7cf8">현실 고수 '+denyCnt+'</span> / <span style="color:#34d399">중립 '+acceptCnt+'</span> / <span style="color:#f87171">균열 '+collapseCnt+'</span></div>':'')+
+      '<div style="margin-top:6px;color:#2a2850;font-size:.65rem;">이 엔딩은 당신의 선택이 만들었습니다.</div></div>';
   } else {
-    document.getElementById('d-text-in').classList.remove('glitch');
+    summaryEl.innerHTML='';
   }
-}
-
-// ================================================================
-//  ENDINGS
-// ================================================================
-function showEnding(key){
-  const e=ENDINGS[key]||ENDINGS.deny;
-  document.getElementById('end-tag').textContent=e.tag;
-  document.getElementById('end-art').textContent=e.art;
-  document.getElementById('end-title').textContent=e.title;
-  document.getElementById('end-body').style.borderColor=e.color;
-  // format line breaks
-  document.getElementById('end-body').innerHTML=e.body.replace(/\n/g,'<br>');
   show('s-end');
 }
 
-// ================================================================
-//  INIT
-// ================================================================
-function startGame(){
-  sanity=100;chIdx=0;dIdx=0;dMode='pre';
-  wrongCount=0;choiceMade=null;puzzleOk=false;
-  setSanity(100);
-  beginChapter();
+// ── spawnGlitchLines (7일차 효과) ──
+function spawnGlitchLines(){
+  var n=8+Math.floor(Math.random()*6);
+  for(var i=0;i<n;i++){
+    setTimeout(function(){
+      var line=document.createElement('div');line.className='glitch-line';
+      line.style.top=Math.random()*100+'vh';
+      line.style.background=Math.random()>.5?'rgba(248,113,113,0.6)':'rgba(110,231,247,0.5)';
+      document.body.appendChild(line);
+      setTimeout(function(){if(line.parentNode)line.parentNode.removeChild(line);},350);
+    },i*30+Math.random()*60);
+  }
 }
 
+// ── flashScreen (7일차 collapse) ──
+function showCrack(){
+  var ov=document.getElementById('crack-ov');
+  var cv2=document.getElementById('crack-cv');
+  cv2.width=window.innerWidth;cv2.height=window.innerHeight;
+  var c=cv2.getContext('2d');c.clearRect(0,0,cv2.width,cv2.height);
+  var n=4+Math.floor((100-sanity)/10);
+  for(var i=0;i<n;i++){
+    c.strokeStyle='rgba(224,124,160,'+(0.1+Math.random()*0.2)+')';
+    c.lineWidth=0.5+Math.random()*1.5;c.beginPath();
+    var x=Math.random()*cv2.width,y=Math.random()*cv2.height;
+    c.moveTo(x,y);
+    for(var j=0;j<8;j++){x+=(-80+Math.random()*160);y+=(-80+Math.random()*160);c.lineTo(x,y);}
+    c.stroke();
+  }
+  ov.classList.add('on');
+  clearTimeout(crackTmr);
+  crackTmr=setTimeout(function(){ov.classList.remove('on');},500);
+}
+
+
+
+// ── 파티클 ──
+function spawnParticles(){
+  var c=document.getElementById('t-particles');
+  for(var i=0;i<28;i++){
+    var p=document.createElement('div');p.className='ptc';
+    var sz=2+Math.random()*5;var hue=240+Math.random()*80;
+    p.style.cssText='width:'+sz+'px;height:'+sz+'px;background:hsl('+hue+',70%,65%);left:'+(Math.random()*100)+'%;animation-duration:'+(7+Math.random()*10)+'s;animation-delay:'+(-Math.random()*8)+'s;';
+    c.appendChild(p);
+  }
+}
+
+// ── 초기화 ──
 document.getElementById('d-next').addEventListener('click',nextDialog);
-show('s-title');
+loadSave();
+spawnParticles();
+drawBg(0,false);
+// 타이틀에서 시작 — 배경 숨기기
+(function(){
+  var dbg=document.getElementById('d-bg');
+  var dvig=document.getElementById('d-vig');
+  if(dbg)dbg.style.display='none';
+  if(dvig)dvig.style.opacity='0';
+})();
+// 이어하기 버튼 활성화
+if(saveData.hasProgress&&saveData.snap){
+  document.getElementById('btn-continue').disabled=false;
+}
+// 저장 초기화 버튼 (엔딩 해금 있을 때만 표시)
+if(saveData.unlockedEndings&&saveData.unlockedEndings.length>0){
+  document.getElementById('btn-reset').style.display='block';
+}
+applyPrevEndingEffects();
 </script>
 </body>
 </html>
